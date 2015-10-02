@@ -296,16 +296,11 @@ public class TripleAPlayer extends AbstractHumanPlayer<TripleAFrame>implements I
     }
     final IMoveDelegate moveDel = getRemoteMoveDelegate();
 
+    playMovePhaseSoundIfNotAlreadyPlayed(nonCombat);
+
     final PlayerID id = getPlayerID();
-    // play a sound for this phase
-    if (nonCombat && !m_soundPlayedAlreadyNonCombatMove) {
-      DefaultSoundChannel.playSoundOnLocalMachine(SoundPath.CLIP_PHASE_MOVE_NONCOMBAT, id.getName());
-      m_soundPlayedAlreadyNonCombatMove = true;
-    } else if (!nonCombat && !m_soundPlayedAlreadyCombatMove) {
-      DefaultSoundChannel.playSoundOnLocalMachine(SoundPath.CLIP_PHASE_MOVE_COMBAT, id.getName());
-      m_soundPlayedAlreadyCombatMove = true;
-    }
     final MoveDescription moveDescription = m_ui.getMove(id, getPlayerBridge(), nonCombat, stepName);
+
     if (moveDescription == null) {
       if (GameStepPropertiesHelper.isRemoveAirThatCanNotLand(getGameData())) {
         if (!canAirLand(true, id)) {
@@ -319,6 +314,7 @@ public class TripleAPlayer extends AbstractHumanPlayer<TripleAFrame>implements I
       }
       return;
     }
+
     final String error = moveDel.move(moveDescription.getUnits(), moveDescription.getRoute(),
         moveDescription.getTransportsThatCanBeLoaded(), moveDescription.getDependentUnits());
     if (error != null) {
@@ -337,6 +333,17 @@ public class TripleAPlayer extends AbstractHumanPlayer<TripleAFrame>implements I
       System.err.println(errorContext);
       e.printStackTrace();
       throw new IllegalStateException(errorContext, e);
+    }
+  }
+
+  private void playMovePhaseSoundIfNotAlreadyPlayed(final boolean nonCombat) {
+    final PlayerID id = getPlayerID();
+    if (nonCombat && !m_soundPlayedAlreadyNonCombatMove) {
+      DefaultSoundChannel.playSoundOnLocalMachine(SoundPath.CLIP_PHASE_MOVE_NONCOMBAT, id.getName());
+      m_soundPlayedAlreadyNonCombatMove = true;
+    } else if (!nonCombat && !m_soundPlayedAlreadyCombatMove) {
+      DefaultSoundChannel.playSoundOnLocalMachine(SoundPath.CLIP_PHASE_MOVE_COMBAT, id.getName());
+      m_soundPlayedAlreadyCombatMove = true;
     }
   }
 
