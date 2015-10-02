@@ -212,7 +212,7 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     }
   }
 
-  public static Change getResetUnitStateChange(final GameData data) {
+  private static Change getResetUnitStateChange(final GameData data) {
     final CompositeChange change = new CompositeChange();
     for (final Unit u : data.getUnits()) {
       final TripleAUnit taUnit = TripleAUnit.get(u);
@@ -271,20 +271,13 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     return null;
   }
 
-  public static Collection<Territory> getEmptyNeutral(final Route route) {
+  private static Collection<Territory> getEmptyNeutral(final Route route) {
     final Match<Territory> emptyNeutral =
         new CompositeMatchAnd<Territory>(Matches.TerritoryIsEmpty, Matches.TerritoryIsNeutralButNotWater);
     final Collection<Territory> neutral = route.getMatches(emptyNeutral);
     return neutral;
   }
 
-  public static Change ensureCanMoveOneSpaceChange(final Unit unit) {
-    final int alreadyMoved = TripleAUnit.get(unit).getAlreadyMoved();
-    final int maxMovement = UnitAttachment.get(unit.getType()).getMovement(unit.getOwner());
-    final int bonusMovement = TripleAUnit.get(unit).getBonusMovement();
-    return ChangeFactory.unitPropertyChange(unit, Math.min(alreadyMoved, (maxMovement + bonusMovement) - 1),
-        TripleAUnit.ALREADY_MOVED);
-  }
 
 
   /** Does nothing with Conquest rules */
