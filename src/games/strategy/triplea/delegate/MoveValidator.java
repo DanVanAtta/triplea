@@ -64,6 +64,9 @@ public class MoveValidator {
       final PlayerID player, final Collection<Unit> transportsToLoad, final Map<Unit, Collection<Unit>> newDependents,
       final boolean isNonCombat, final List<UndoableMove> undoableMoves, final GameData data) {
     final MoveValidationResult result = new MoveValidationResult();
+
+        // TODO check if we are using conquest rules, if so, change the validation.
+
     if (route.hasNoSteps()) {
       return result;
     }
