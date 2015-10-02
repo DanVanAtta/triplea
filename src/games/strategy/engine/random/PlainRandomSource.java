@@ -34,9 +34,6 @@ public class PlainRandomSource implements IRandomSource {
   @Override
   public synchronized int[] getRandom(final int max, final int count, final String annotation)
       throws IllegalArgumentException {
-    if (count <= 0) {
-      throw new IllegalArgumentException("count must be > 0, annotation:" + annotation);
-    }
     final int[] numbers = new int[count];
     for (int i = 0; i < count; i++) {
       numbers[i] = getRandom(max, annotation);
