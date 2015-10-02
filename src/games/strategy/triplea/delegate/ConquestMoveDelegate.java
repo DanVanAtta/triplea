@@ -255,28 +255,14 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
   }
 
 
+
   @Override
   public String move(final Collection<Unit> units, final Route route, final Collection<Unit> transportsThatCanBeLoaded,
       final Map<Unit, Collection<Unit>> newDependents) {
     final GameData data = getData();
-    // there reason we use this, is because if we are in edit mode, we may have a different unit owner than the current
-    // player.
+
     final PlayerID player = getUnitsOwner(units);
-    final MoveValidationResult result = MoveValidator.validateMove(units, route, player, transportsThatCanBeLoaded,
-        newDependents, GameStepPropertiesHelper.isNonCombatMove(data, false), m_movesToUndo, data);
-    final StringBuilder errorMsg = new StringBuilder(100);
-    final int numProblems = result.getTotalWarningCount() - (result.hasError() ? 0 : 1);
-    final String numErrorsMsg =
-        numProblems > 0 ? ("; " + numProblems + " " + MyFormatter.pluralize("error", numProblems) + " not shown") : "";
-    if (result.hasError()) {
-      return errorMsg.append(result.getError()).append(numErrorsMsg).toString();
-    }
-    if (result.hasDisallowedUnits()) {
-      return errorMsg.append(result.getDisallowedUnitWarning(0)).append(numErrorsMsg).toString();
-    }
-    if (result.hasUnresolvedUnits()) {
-      return errorMsg.append(result.getUnresolvedUnitWarning(0)).append(numErrorsMsg).toString();
-    }
+
     // do the move
     final UndoableMove currentMove = new UndoableMove(data, units, route);
     final String transcriptText = MyFormatter.unitsToTextNoOwner(units) + " moved from " + route.getStart().getName()
