@@ -49,7 +49,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
   // needToInitialize means we only do certain things once, so that if a game is saved then
   // loaded, they aren't done again
   private boolean m_needToInitialize = true;
-  private boolean m_needToDoRockets = true;
   private IntegerMap<Territory> m_PUsLost = new IntegerMap<Territory>();
 
   /** Creates new MoveDelegate */
@@ -191,22 +190,12 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     if (GameStepPropertiesHelper.isRemoveAirThatCanNotLand(data)) {
       removeAirThatCantLand();
     }
-    // WW2V2/WW2V3, fires at end of combat move
-    // WW2V1, fires at end of non combat move
-    if (GameStepPropertiesHelper.isFireRockets(data)) {
-      if (m_needToDoRockets && TechTracker.hasRocket(m_bridge.getPlayerID())) {
-        final RocketsFireHelper helper = new RocketsFireHelper();
-        helper.fireRockets(m_bridge, m_bridge.getPlayerID());
-        m_needToDoRockets = false;
-      }
-    }
     // do at the end of the round, if we do it at the start of non combat, then we may do it in the middle of the round,
     // while loading.
     if (GameStepPropertiesHelper.isResetUnitStateAtEnd(data)) {
       resetUnitStateAndDelegateState();
     }
     m_needToInitialize = true;
-    m_needToDoRockets = true;
   }
 
   @Override
@@ -224,7 +213,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     final MoveExtendedDelegateState state = new MoveExtendedDelegateState();
     state.superState = super.saveState();
     state.m_needToInitialize = m_needToInitialize;
-    state.m_needToDoRockets = m_needToDoRockets;
     state.m_PUsLost = m_PUsLost;
     return state;
   }
@@ -234,7 +222,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     final MoveExtendedDelegateState s = (MoveExtendedDelegateState) state;
     super.loadState(s.superState);
     m_needToInitialize = s.m_needToInitialize;
-    m_needToDoRockets = s.m_needToDoRockets;
     m_PUsLost = s.m_PUsLost;
   }
 
