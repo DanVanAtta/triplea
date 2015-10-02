@@ -261,14 +261,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     return null;
   }
 
-  private static Collection<Territory> getEmptyNeutral(final Route route) {
-    final Match<Territory> emptyNeutral =
-        new CompositeMatchAnd<Territory>(Matches.TerritoryIsEmpty, Matches.TerritoryIsNeutralButNotWater);
-    final Collection<Territory> neutral = route.getMatches(emptyNeutral);
-    return neutral;
-  }
-
-
 
   /** Does nothing with Conquest rules */
   @Override
