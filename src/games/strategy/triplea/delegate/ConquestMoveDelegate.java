@@ -1,16 +1,11 @@
 package games.strategy.triplea.delegate;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import games.strategy.common.delegate.GameDelegateBridge;
@@ -27,17 +22,12 @@ import games.strategy.triplea.TripleAUnit;
 import games.strategy.triplea.attatchments.AbstractTriggerAttachment;
 import games.strategy.triplea.attatchments.ICondition;
 import games.strategy.triplea.attatchments.TriggerAttachment;
-import games.strategy.triplea.attatchments.UnitAttachment;
-import games.strategy.triplea.delegate.dataObjects.MoveValidationResult;
 import games.strategy.triplea.delegate.remote.IMoveDelegate;
 import games.strategy.triplea.formatter.MyFormatter;
-import games.strategy.triplea.util.UnitCategory;
-import games.strategy.triplea.util.UnitSeperator;
 import games.strategy.util.CompositeMatchAnd;
 import games.strategy.util.CompositeMatchOr;
 import games.strategy.util.IntegerMap;
 import games.strategy.util.Match;
-import games.strategy.util.Util;
 
 /**
  * Responsible for moving units on the board.
