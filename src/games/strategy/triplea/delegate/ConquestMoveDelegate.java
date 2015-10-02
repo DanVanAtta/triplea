@@ -49,7 +49,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
   // needToInitialize means we only do certain things once, so that if a game is saved then
   // loaded, they aren't done again
   private boolean m_needToInitialize = true;
-  private IntegerMap<Territory> m_PUsLost = new IntegerMap<Territory>();
 
   /** Creates new MoveDelegate */
   public ConquestMoveDelegate() {}
@@ -171,7 +170,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     final MoveExtendedDelegateState state = new MoveExtendedDelegateState();
     state.superState = super.saveState();
     state.m_needToInitialize = m_needToInitialize;
-    state.m_PUsLost = m_PUsLost;
     return state;
   }
 
@@ -180,7 +178,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     final MoveExtendedDelegateState s = (MoveExtendedDelegateState) state;
     super.loadState(s.superState);
     m_needToInitialize = s.m_needToInitialize;
-    m_PUsLost = s.m_PUsLost;
   }
 
   @Override
@@ -206,7 +203,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
   private void resetUnitStateAndDelegateState() {
     // while not a 'unit state', this is fine here for now. since we only have one instance of this delegate, as long as
     // it gets cleared once per player's turn block, we are fine.
-    m_PUsLost.clear();
     final Change change = getResetUnitStateChange(getData());
     if (!change.isEmpty()) {
       // if no non-combat occurred, we may have cleanup left from combat
