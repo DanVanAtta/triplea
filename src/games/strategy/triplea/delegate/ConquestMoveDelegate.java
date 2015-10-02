@@ -169,7 +169,7 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     super.loadState(s.superState);
     m_needToInitialize = s.m_needToInitialize;
   }
-
+      // TODO  -- this is going to need to be updated to check if we can make any more attacks
   @Override
   public boolean delegateCurrentlyRequiresUserInput() {
     final CompositeMatchAnd<Unit> moveableUnitOwnedByMe = new CompositeMatchAnd<Unit>();
