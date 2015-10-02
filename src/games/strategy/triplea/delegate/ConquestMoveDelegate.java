@@ -122,14 +122,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
           }
         }
       }
-      // reset any bonus of units, and give movement to units which begin the turn in the same territory as units with
-      // giveMovement (like
-      // air and naval bases)
-      if (GameStepPropertiesHelper.isGiveBonusMovement(data)) {
-        resetAndGiveBonusMovement();
-      }
-      // take away all movement from allied fighters sitting on damaged carriers
-      removeMovementFromAirOnDamagedAlliedCarriers(m_bridge, m_player);
       // placing triggered units at beginning of combat move, but after bonuses and repairing, etc, have been done.
       if (GameStepPropertiesHelper.isCombatMove(data, false) && games.strategy.triplea.Properties.getTriggers(data)) {
         final HashSet<TriggerAttachment> toFireAfterBonus = TriggerAttachment.collectForAllTriggersMatching(
@@ -150,29 +142,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     }
   }
 
-  private void resetAndGiveBonusMovement() {
-    boolean addedHistoryEvent = false;
-    {
-      final Change changeReset = resetBonusMovement();
-      if (!changeReset.isEmpty()) {
-        m_bridge.getHistoryWriter().startEvent("Resetting and Giving Bonus Movement to Units");
-        m_bridge.addChange(changeReset);
-        addedHistoryEvent = true;
-      }
-    }
-    {
-      Change changeBonus = null;
-      if (games.strategy.triplea.Properties.getUnitsMayGiveBonusMovement(getData())) {
-        changeBonus = giveBonusMovement(m_bridge, m_player);
-      }
-      if (changeBonus != null && !changeBonus.isEmpty()) {
-        if (!addedHistoryEvent) {
-          m_bridge.getHistoryWriter().startEvent("Resetting and Giving Bonus Movement to Units");
-        }
-        m_bridge.addChange(changeBonus);
-      }
-    }
-  }
 
   /**
    * Called before the delegate will stop running.
@@ -181,11 +150,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
   public void end() {
     super.end();
     final GameData data = getData();
-    if (GameStepPropertiesHelper.isRemoveAirThatCanNotLand(data)) {
-      removeAirThatCantLand();
-    }
-    // do at the end of the round, if we do it at the start of non combat, then we may do it in the middle of the round,
-    // while loading.
     if (GameStepPropertiesHelper.isResetUnitStateAtEnd(data)) {
       resetUnitStateAndDelegateState();
     }
@@ -238,16 +202,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     return false;
   }
 
-  private Change resetBonusMovement() {
-    final GameData data = getData();
-    final CompositeChange change = new CompositeChange();
-    for (final Unit u : data.getUnits()) {
-      if (TripleAUnit.get(u).getBonusMovement() != 0) {
-        change.add(ChangeFactory.unitPropertyChange(u, 0, TripleAUnit.BONUS_MOVEMENT));
-      }
-    }
-    return change;
-  }
 
   private void resetUnitStateAndDelegateState() {
     // while not a 'unit state', this is fine here for now. since we only have one instance of this delegate, as long as
@@ -424,29 +378,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     final int bonusMovement = TripleAUnit.get(unit).getBonusMovement();
     return ChangeFactory.unitPropertyChange(unit, Math.min(alreadyMoved, (maxMovement + bonusMovement) - 1),
         TripleAUnit.ALREADY_MOVED);
-  }
-
-  private void removeAirThatCantLand() {
-    final GameData data = getData();
-    final boolean lhtrCarrierProd = AirThatCantLandUtil.isLHTRCarrierProduction(data)
-        || AirThatCantLandUtil.isLandExistingFightersOnNewCarriers(data);
-    boolean hasProducedCarriers = false;
-    for (final PlayerID p : GameStepPropertiesHelper.getCombinedTurns(data, m_player)) {
-      if (p.getUnits().someMatch(Matches.UnitIsCarrier)) {
-        hasProducedCarriers = true;
-        break;
-      }
-    }
-    final AirThatCantLandUtil util = new AirThatCantLandUtil(m_bridge);
-    util.removeAirThatCantLand(m_player, lhtrCarrierProd && hasProducedCarriers);
-    // if edit mode has been on, we need to clean up after all players
-    for (final PlayerID player : data.getPlayerList()) {
-      // Check if player still has units to place
-      if (!player.equals(m_player)) {
-        util.removeAirThatCantLand(player,
-            ((player.getUnits().someMatch(Matches.UnitIsCarrier) || hasProducedCarriers) && lhtrCarrierProd));
-      }
-    }
   }
 
   /**
@@ -686,28 +617,15 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     return totalLoad;
   }
 
-  /**
-   * @param t
-   *        referring territory
-   * @return the number of PUs that have been lost by bombing, rockets, etc.
-   */
+  /** Does nothing with Conquest rules */
   @Override
   public int PUsAlreadyLost(final Territory t) {
-    return m_PUsLost.getInt(t);
+    return 0;
   }
 
-  /**
-   * Add more PUs lost to a territory due to bombing, rockets, etc.
-   *
-   * @param t
-   *        referring territoy
-   * @param amt
-   *        amount of PUs that should be added
-   */
+  /** Does nothing with Conquest rules*/
   @Override
-  public void PUsLost(final Territory t, final int amt) {
-    m_PUsLost.add(t, amt);
-  }
+  public void PUsLost(final Territory t, final int amt) { }
 }
 
 
