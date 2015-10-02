@@ -294,17 +294,7 @@ public class TripleAPlayer extends AbstractHumanPlayer<TripleAFrame>implements I
     if (getPlayerBridge().isGameOver()) {
       return;
     }
-    final IMoveDelegate moveDel;
-    try {
-      moveDel = (IMoveDelegate) getPlayerBridge().getRemoteDelegate();
-    } catch (final ClassCastException e) {
-      final String errorContext = "PlayerBridge step name: " + getPlayerBridge().getStepName() + ", Remote class name: "
-          + getPlayerBridge().getRemoteDelegate().getClass();
-      // for some reason the client is not seeing or getting these errors, so print to err too
-      System.err.println(errorContext);
-      e.printStackTrace();
-      throw new IllegalStateException(errorContext, e);
-    }
+    final IMoveDelegate moveDel = getRemoteMoveDelegate();
 
     final PlayerID id = getPlayerID();
     // play a sound for this phase
@@ -335,6 +325,19 @@ public class TripleAPlayer extends AbstractHumanPlayer<TripleAFrame>implements I
       m_ui.notifyError(error);
     }
     move(nonCombat, stepName);
+  }
+
+  private IMoveDelegate getRemoteMoveDelegate() {
+    try {
+      return (IMoveDelegate) getPlayerBridge().getRemoteDelegate();
+    } catch (final ClassCastException e) {
+      final String errorContext = "PlayerBridge step name: " + getPlayerBridge().getStepName() + ", Remote class name: "
+          + getPlayerBridge().getRemoteDelegate().getClass();
+      // for some reason the client is not seeing or getting these errors, so print to err too
+      System.err.println(errorContext);
+      e.printStackTrace();
+      throw new IllegalStateException(errorContext, e);
+    }
   }
 
   private boolean canAirLand(final boolean movePhase, final PlayerID player) {
