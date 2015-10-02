@@ -122,12 +122,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
           }
         }
       }
-      // repair 2-hit units at beginning of turn (some maps have combat move before purchase, so i think it is better to
-      // do this at
-      // beginning of combat move)
-      if (GameStepPropertiesHelper.isRepairUnits(data)) {
-        ConquestMoveDelegate.repairMultipleHitPointUnits(m_bridge, m_player);
-      }
       // reset any bonus of units, and give movement to units which begin the turn in the same territory as units with
       // giveMovement (like
       // air and naval bases)
@@ -381,39 +375,6 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
       }
     }
     return change;
-  }
-
-  public static void repairMultipleHitPointUnits(final IDelegateBridge aBridge, final PlayerID player) {
-    final GameData data = aBridge.getData();
-    final boolean repairOnlyOwn =
-        games.strategy.triplea.Properties.getBattleshipsRepairAtBeginningOfRound(aBridge.getData());
-    final Match<Unit> damagedUnits =
-        new CompositeMatchAnd<Unit>(Matches.UnitHasMoreThanOneHitPointTotal, Matches.UnitHasTakenSomeDamage);
-    final Match<Unit> damagedUnitsOwned = new CompositeMatchAnd<Unit>(damagedUnits, Matches.unitIsOwnedBy(player));
-    final Map<Territory, Set<Unit>> damagedMap = new HashMap<Territory, Set<Unit>>();
-    final Iterator<Territory> iterTerritories = data.getMap().getTerritories().iterator();
-    while (iterTerritories.hasNext()) {
-      final Territory current = iterTerritories.next();
-      final Set<Unit> damaged;
-      if (!games.strategy.triplea.Properties.getTwoHitPointUnitsRequireRepairFacilities(data)) {
-        if (repairOnlyOwn) {
-          // we only repair ours
-          damaged = new HashSet<Unit>(current.getUnits().getMatches(damagedUnitsOwned));
-        } else {
-          // we repair everyone's
-          damaged = new HashSet<Unit>(current.getUnits().getMatches(damagedUnits));
-        }
-      } else {
-        damaged = new HashSet<Unit>(current.getUnits().getMatches(new CompositeMatchAnd<Unit>(damagedUnitsOwned,
-            Matches.UnitCanBeRepairedByFacilitiesInItsTerritory(current, player, data))));
-      }
-      if (!damaged.isEmpty()) {
-        damagedMap.put(current, damaged);
-      }
-    }
-    if (damagedMap.isEmpty()) {
-      return;
-    }
   }
 
   @Override
