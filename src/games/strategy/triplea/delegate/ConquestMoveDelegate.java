@@ -509,45 +509,14 @@ public class ConquestMoveDelegate extends AbstractMoveDelegate implements IMoveD
     if (result.hasDisallowedUnits()) {
       return errorMsg.append(result.getDisallowedUnitWarning(0)).append(numErrorsMsg).toString();
     }
-    boolean isKamikaze = false;
-    final boolean getKamikazeAir = games.strategy.triplea.Properties.getKamikaze_Airplanes(data);
-    Collection<Unit> kamikazeUnits = new ArrayList<Unit>();
-    // boolean isHariKari = false;
-    // confirm kamikaze moves, and remove them from unresolved units
-    if (getKamikazeAir || Match.someMatch(units, Matches.UnitIsKamikaze)) {
-      kamikazeUnits = result.getUnresolvedUnits(MoveValidator.NOT_ALL_AIR_UNITS_CAN_LAND);
-      if (kamikazeUnits.size() > 0 && getRemotePlayer().confirmMoveKamikaze()) {
-        for (final Unit unit : kamikazeUnits) {
-          if (getKamikazeAir || Matches.UnitIsKamikaze.match(unit)) {
-            result.removeUnresolvedUnit(MoveValidator.NOT_ALL_AIR_UNITS_CAN_LAND, unit);
-            isKamikaze = true;
-          }
-        }
-      }
-    }
     if (result.hasUnresolvedUnits()) {
       return errorMsg.append(result.getUnresolvedUnitWarning(0)).append(numErrorsMsg).toString();
-    }
-    // allow user to cancel move if aa guns will fire
-    final AAInMoveUtil aaInMoveUtil = new AAInMoveUtil();
-    aaInMoveUtil.initialize(m_bridge);
-    final Collection<Territory> aaFiringTerritores = aaInMoveUtil.getTerritoriesWhereAAWillFire(route, units);
-    if (!aaFiringTerritores.isEmpty()) {
-      if (!getRemotePlayer().confirmMoveInFaceOfAA(aaFiringTerritores)) {
-        return null;
-      }
     }
     // do the move
     final UndoableMove currentMove = new UndoableMove(data, units, route);
     final String transcriptText = MyFormatter.unitsToTextNoOwner(units) + " moved from " + route.getStart().getName()
         + " to " + route.getEnd().getName();
     m_bridge.getHistoryWriter().startEvent(transcriptText, currentMove.getDescriptionObject());
-    if (isKamikaze) {
-      m_bridge.getHistoryWriter().addChildToEvent("This was a kamikaze move, for at least some of the units",
-          kamikazeUnits);
-    }
-    // MoveDescription description = new MoveDescription(units, route);
-    // m_bridge.getHistoryWriter().setRenderingData(description);
     m_tempMovePerformer = new MovePerformer();
     m_tempMovePerformer.initialize(this);
     m_tempMovePerformer.moveUnits(units, route, player, transportsThatCanBeLoaded, newDependents, currentMove);
