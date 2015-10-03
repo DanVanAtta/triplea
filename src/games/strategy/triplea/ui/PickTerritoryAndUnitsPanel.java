@@ -98,7 +98,18 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
     return new Tuple<Territory, Set<Unit>>(this.m_pickedTerritory, this.m_pickedUnits);
   }
 
-  private void setWidgetActivation() {
+
+  private void disablePanelButtons(Action currentAction) {
+    m_currentAction = currentAction;
+    updateButtonActivation();
+  }
+
+  private void enablePanelButtons() {
+    m_currentAction = null;
+    updateButtonActivation();
+  }
+
+  private void updateButtonActivation() {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -108,16 +119,6 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
         SelectTerritoryAction.setEnabled(enabled);
       }
     });
-  }
-
-  private void disablePanelButtons(Action currentAction) {
-    m_currentAction = currentAction;
-    setWidgetActivation();
-  }
-
-  private void enablePanelButtons() {
-    m_currentAction = null;
-    setWidgetActivation();
   }
 
   private final Action DoneAction = new AbstractAction("Done") {
