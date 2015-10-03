@@ -102,15 +102,10 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        if (getActive() && m_currentAction == null) {
-          DoneAction.setEnabled(true);
-          SelectUnitsAction.setEnabled(true);
-          SelectTerritoryAction.setEnabled(true);
-        } else {
-          DoneAction.setEnabled(false);
-          SelectUnitsAction.setEnabled(false);
-          SelectTerritoryAction.setEnabled(false);
-        }
+        boolean enabled = (getActive() && m_currentAction == null);
+        DoneAction.setEnabled(enabled);
+        SelectUnitsAction.setEnabled(enabled);
+        SelectTerritoryAction.setEnabled(enabled);
       }
     });
   }
