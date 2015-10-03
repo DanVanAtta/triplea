@@ -41,40 +41,7 @@ public class RandomStartDelegate extends BaseTripleADelegate {
     setupBoard();
   }
 
-  /**
-   * Called before the delegate will stop running.
-   */
-  @Override
-  public void end() {
-    super.end();
-    m_currentPickingPlayer = null;
-  }
-
-  @Override
-  public boolean delegateCurrentlyRequiresUserInput() {
-    if (Match.noneMatch(getData().getMap().getTerritories(), getTerritoryPickableMatch())
-        && Match.noneMatch(getData().getPlayerList().getPlayers(), getPlayerCanPickMatch())) {
-      return false;
-    }
-    return true;
-  }
-
-  @Override
-  public Serializable saveState() {
-    final RandomStartExtendedDelegateState state = new RandomStartExtendedDelegateState();
-    state.superState = super.saveState();
-    state.m_currentPickingPlayer = this.m_currentPickingPlayer;
-    return state;
-  }
-
-  @Override
-  public void loadState(final Serializable state) {
-    final RandomStartExtendedDelegateState s = (RandomStartExtendedDelegateState) state;
-    super.loadState(s.superState);
-    this.m_currentPickingPlayer = s.m_currentPickingPlayer;
-  }
-
-  protected void setupBoard() {
+  private void setupBoard() {
     final GameData data = getData();
     final boolean randomTerritories = games.strategy.triplea.Properties.getTerritoriesAreAssignedRandomly(data);
     final Match<Territory> pickableTerritoryMatch = getTerritoryPickableMatch();
@@ -209,6 +176,42 @@ public class RandomStartDelegate extends BaseTripleADelegate {
       }
     }
   }
+
+
+
+  /**
+   * Called before the delegate will stop running.
+   */
+  @Override
+  public void end() {
+    super.end();
+    m_currentPickingPlayer = null;
+  }
+
+  @Override
+  public boolean delegateCurrentlyRequiresUserInput() {
+    if (Match.noneMatch(getData().getMap().getTerritories(), getTerritoryPickableMatch())
+        && Match.noneMatch(getData().getPlayerList().getPlayers(), getPlayerCanPickMatch())) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public Serializable saveState() {
+    final RandomStartExtendedDelegateState state = new RandomStartExtendedDelegateState();
+    state.superState = super.saveState();
+    state.m_currentPickingPlayer = this.m_currentPickingPlayer;
+    return state;
+  }
+
+  @Override
+  public void loadState(final Serializable state) {
+    final RandomStartExtendedDelegateState s = (RandomStartExtendedDelegateState) state;
+    super.loadState(s.superState);
+    this.m_currentPickingPlayer = s.m_currentPickingPlayer;
+  }
+
 
   protected PlayerID getNextPlayer(final List<PlayerID> playersCanPick, final PlayerID currentPlayer) {
     int index = playersCanPick.indexOf(currentPlayer);
