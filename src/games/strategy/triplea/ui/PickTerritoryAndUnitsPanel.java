@@ -41,7 +41,7 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
   private Action m_currentAction = null;
   private Territory m_currentHighlightedTerritory = null;
 
-  public PickTerritoryAndUnitsPanel(final GameData data, final MapPanel map, final TripleAFrame parent) {
+  protected PickTerritoryAndUnitsPanel(final GameData data, final MapPanel map, final TripleAFrame parent) {
     super(data, map);
     m_parent = parent;
   }
@@ -63,14 +63,14 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
       @Override
       public void run() {
         removeAll();
-        m_actionLabel.setText(id.getName() + " Pick Territory and Units");
+        m_actionLabel.setText(id.getName() + " Pick a Territory to Place a Unit");
         add(m_actionLabel);
         add(m_doneButton);
       }
     });
   }
 
-  public Tuple<Territory, Set<Unit>> waitForPickTerritoryAndUnits(final List<Territory> territoryChoices,
+  protected Tuple<Territory, Set<Unit>> waitForPickTerritoryAndUnits(final List<Territory> territoryChoices,
       final List<Unit> unitChoices, final int unitsPerPick) {
     m_territoryChoices = territoryChoices;
     m_unitChoices = unitChoices;
