@@ -98,18 +98,17 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
     return new Tuple<Territory, Set<Unit>>(this.m_pickedTerritory, this.m_pickedUnits);
   }
 
-
-  private void disablePanelButtons(Action currentAction) {
+  private void disableUserSelectionActions(Action currentAction) {
     m_currentAction = currentAction;
-    updateButtonActivation();
+    updateUserActionActivation();
   }
 
-  private void enablePanelButtons() {
+  private void enableUserSelectionActions() {
     m_currentAction = null;
-    updateButtonActivation();
+    updateUserActionActivation();
   }
 
-  private void updateButtonActivation() {
+  private void updateUserActionActivation() {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
@@ -126,12 +125,12 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
 
     @Override
     public void actionPerformed(final ActionEvent event) {
-      disablePanelButtons(DoneAction);
+      disableUserSelectionActions(DoneAction);
       if (m_pickedTerritory == null || !m_territoryChoices.contains(m_pickedTerritory)) {
         EventThreadJOptionPane.showMessageDialog(m_parent, "Must Pick An Unowned Territory",
             "Must Pick An Unowned Territory", JOptionPane.WARNING_MESSAGE, new CountDownLatchHandler(true));
         m_currentAction = null;
-        enablePanelButtons();
+        enableUserSelectionActions();
         if (m_currentHighlightedTerritory != null) {
           getMap().clearTerritoryOverlay(m_currentHighlightedTerritory);
         }
@@ -143,14 +142,14 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
         EventThreadJOptionPane.showMessageDialog(m_parent, "Invalid Units?!?", "Invalid Units?!?",
             JOptionPane.WARNING_MESSAGE, new CountDownLatchHandler(true));
         m_pickedUnits.clear();
-        enablePanelButtons();
+        enableUserSelectionActions();
         return;
       }
       if (m_pickedUnits.size() > Math.max(0, m_unitsPerPick)) {
         EventThreadJOptionPane.showMessageDialog(m_parent, "Too Many Units?!?", "Too Many Units?!?",
             JOptionPane.WARNING_MESSAGE, new CountDownLatchHandler(true));
         m_pickedUnits.clear();
-        enablePanelButtons();
+        enableUserSelectionActions();
         return;
       }
       if (m_pickedUnits.size() < m_unitsPerPick) {
@@ -164,11 +163,11 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
         } else {
           EventThreadJOptionPane.showMessageDialog(m_parent, "Must Choose Units For This Territory",
               "Must Choose Units For This Territory", JOptionPane.WARNING_MESSAGE, new CountDownLatchHandler(true));
-          enablePanelButtons();
+          enableUserSelectionActions();
           return;
         }
       }
-      enablePanelButtons();
+      enableUserSelectionActions();
 
       if (m_currentHighlightedTerritory != null) {
         getMap().clearTerritoryOverlay(m_currentHighlightedTerritory);
@@ -182,7 +181,7 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
 
     @Override
     public void actionPerformed(final ActionEvent event) {
-      disablePanelButtons(SelectUnitsAction);
+      disableUserSelectionActions(SelectUnitsAction);
       final UnitChooser unitChooser = new UnitChooser(m_unitChoices, Collections.<Unit, Collection<Unit>>emptyMap(),
           getData(), false, getMap().getUIContext());
       unitChooser.setMaxAndShowMaxButton(m_unitsPerPick);
@@ -191,7 +190,7 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
         m_pickedUnits.clear();
         m_pickedUnits.addAll(unitChooser.getSelected());
       }
-      enablePanelButtons();
+      enableUserSelectionActions();
     }
   };
   private final Action SelectTerritoryAction = new AbstractAction("Select Territory") {
@@ -199,7 +198,7 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
 
     @Override
     public void actionPerformed(final ActionEvent event) {
-      disablePanelButtons(SelectTerritoryAction);
+      disableUserSelectionActions(SelectTerritoryAction);
       getMap().addMapSelectionListener(MAP_SELECTION_LISTENER);
 
     }
@@ -222,7 +221,7 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
           @Override
           public void run() {
             getMap().removeMapSelectionListener(MAP_SELECTION_LISTENER);
-            enablePanelButtons();
+            enableUserSelectionActions();
           }
         });
       } else {
