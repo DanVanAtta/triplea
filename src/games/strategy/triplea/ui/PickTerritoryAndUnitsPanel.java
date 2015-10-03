@@ -33,8 +33,6 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
   private final TripleAFrame m_parent;
   private final JLabel m_actionLabel = new JLabel();
   private JButton m_doneButton = null;
-  private JButton m_selectTerritoryButton = null;
-  private JButton m_selectUnitsButton = null;
   private Territory m_pickedTerritory = null;
   private Set<Unit> m_pickedUnits = new HashSet<Unit>();
   private List<Territory> m_territoryChoices = null;
@@ -66,18 +64,8 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
         removeAll();
         m_actionLabel.setText(id.getName() + " Pick Territory and Units");
         add(m_actionLabel);
-        m_selectTerritoryButton = new JButton(SelectTerritoryAction);
-        add(m_selectTerritoryButton);
-        m_selectUnitsButton = new JButton(SelectUnitsAction);
-        add(m_selectUnitsButton);
         m_doneButton = new JButton(DoneAction);
         add(m_doneButton);
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            m_selectTerritoryButton.requestFocusInWindow();
-          }
-        });
       }
     });
   }
