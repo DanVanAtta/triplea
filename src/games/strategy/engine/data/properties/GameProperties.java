@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 import games.strategy.engine.data.GameData;
 import games.strategy.engine.data.GameDataComponent;
 
@@ -40,6 +43,14 @@ public class GameProperties extends GameDataComponent {
    */
   public GameProperties(final GameData data) {
     super(data);
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("map editable properties", m_editableProperties)
+        .add("map constant properties", m_constantProperties)
+        .toString();
   }
 
   /**
