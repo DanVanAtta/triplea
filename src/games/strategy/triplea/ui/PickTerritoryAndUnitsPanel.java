@@ -58,13 +58,13 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
     m_pickedUnits = new HashSet<Unit>();
     m_currentAction = null;
     m_currentHighlightedTerritory = null;
+    m_doneButton = new JButton(DoneAction);
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         removeAll();
         m_actionLabel.setText(id.getName() + " Pick Territory and Units");
         add(m_actionLabel);
-        m_doneButton = new JButton(DoneAction);
         add(m_doneButton);
       }
     });
