@@ -8,6 +8,7 @@ import games.strategy.engine.data.GameData;
  * </p>
  */
 public class Properties implements Constants {
+
   // These should always default to false, if boolean, and if not should default to whatever is the "default" behavior
   // of TripleA.
   // If you want something to default to "true", when change the wording of the constant to make it a negative of
@@ -645,10 +646,6 @@ public class Properties implements Constants {
     return data.getProperties().get(CAN_SCRAMBLE_INTO_AIR_BATTLES, false);
   }
 
-  public static boolean getTerritoriesAreAssignedRandomly(final GameData data) {
-    return data.getProperties().get(TERRITORIES_ARE_ASSIGNED_RANDOMLY, false);
-  }
-
   public static boolean getUseFuelCost(final GameData data) {
     return data.getProperties().get(USE_FUEL_COST, false);
   }
@@ -671,6 +668,14 @@ public class Properties implements Constants {
 
   public static boolean getDisabledPlayersAssetsDeleted(final GameData data) {
     return data.getProperties().get(DISABLED_PLAYERS_ASSETS_DELETED, false);
+  }
+
+  public static boolean getTerritoriesAreAssignedRandomly(final GameData data) {
+    return data.getProperties().get(TERRITORIES_ARE_ASSIGNED_RANDOMLY, false);
+  }
+
+  public static boolean getUsingConquestMovementRules(GameData data) {
+    return data.getProperties().get(CONQUEST_MOVEMENT_RULES, false);
   }
 
   private Properties() {}

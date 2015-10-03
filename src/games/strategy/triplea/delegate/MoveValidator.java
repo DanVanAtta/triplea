@@ -67,6 +67,14 @@ public class MoveValidator {
 
         // TODO check if we are using conquest rules, if so, change the validation.
 
+    final boolean usingConquestMovementRules = games.strategy.triplea.Properties.getUsingConquestMovementRules(data);
+    if( usingConquestMovementRules ) {
+      return ConquestMoveValidator.validateMove(units, route,
+          player, transportsToLoad, newDependents,
+          isNonCombat, undoableMoves,data);
+    }
+
+
     if (route.hasNoSteps()) {
       return result;
     }
