@@ -102,15 +102,14 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        if (!getActive() || m_currentAction != null) {
-          // current turn belongs to remote player or AI player
-          DoneAction.setEnabled(false);
-          SelectUnitsAction.setEnabled(false);
-          SelectTerritoryAction.setEnabled(false);
-        } else {
+        if (getActive() && m_currentAction == null) {
           DoneAction.setEnabled(true);
           SelectUnitsAction.setEnabled(true);
           SelectTerritoryAction.setEnabled(true);
+        } else {
+          DoneAction.setEnabled(false);
+          SelectUnitsAction.setEnabled(false);
+          SelectTerritoryAction.setEnabled(false);
         }
       }
     });
