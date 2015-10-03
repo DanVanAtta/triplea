@@ -31,7 +31,6 @@ import games.strategy.util.Tuple;
 public class PickTerritoryAndUnitsPanel extends ActionPanel {
   private static final long serialVersionUID = -2672163347536778594L;
   private final TripleAFrame m_parent;
-  private final JLabel m_actionLabel = new JLabel();
   private JButton m_doneButton = null;
   private Territory m_pickedTerritory = null;
   private Set<Unit> m_pickedUnits = new HashSet<Unit>();
@@ -59,11 +58,13 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
     m_currentAction = null;
     m_currentHighlightedTerritory = null;
     m_doneButton = new JButton(DoneAction);
+
+    final JLabel m_actionLabel = new JLabel(id.getName() + " Pick a Territory to Place a Unit");
+
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         removeAll();
-        m_actionLabel.setText(id.getName() + " Pick a Territory to Place a Unit");
         add(m_actionLabel);
         add(m_doneButton);
       }
