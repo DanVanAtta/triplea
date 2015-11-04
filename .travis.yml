@@ -5,12 +5,22 @@ install: true
 script:
 - gradle test
 before_deploy:
-- gradle shadowjar
+- echo "Setting up git and pushing a tag to trigger a release"
 - git config --global user.email "tripleabuilderbot@gmail.com"
 - git config --global user.name "tripleabuilderbot"
 - export TAGGED_VERSION="$BUILD_VERSION.$TRAVIS_BUILD_NUMBER"
 - git tag $TAGGED_VERSION -a -m "$TAGGED_VERSION"
-- git push -q https://$GITHUB_PERSONAL_ACCESS_TOKEN_FOR_TRAVIS@github.com/triplea-game/triplea --tags
+- echo 'git push -q https://$GITHUB_PERSONAL_ACCESS_TOKEN_FOR_TRAVIS@github.com/triplea-game/triplea --tags'
+- echo "Installing Install4j"
+- wget http://download-aws.ej-technologies.com/install4j/install4j_unix_6_0_4.sh
+- chmod +x install4j_unix_6_0_4.sh
+- ./install4j_unix_6_0_4.sh -q
+- mkdir -p ~/.gradle
+- grep -q "install4jHomeDir" ~/.gradle/gradle.properties 2> /dev/null || echo "install4jHomeDir=$(cd ~ && pwd)/install4j6" >> ~/.gradle/gradle.properties
+- gradle release
+- echo "showing build folder contents"
+- find build
+# install4jc -L $INSTALL4J_LICENSE
 deploy:
   provider: releases
   api_key:
@@ -22,3 +32,13 @@ deploy:
     repo: triplea-game/triplea
     tags: false
     all_branches: true
+deploy:
+  provider: releases
+  api_key:
+    secure: gpvfUfIvgL3a99PiGZtTbFKptC08P0RceEfkEsDS5UZP3al5SNgppPeDjU1kQFAQ2yXtNOtWIgiTRL4LFYE5jUcjo9jHQyDrbfZFSHLfLAU9WWIvZl3UtVLgHGBm3F7yPY7RQZGlo5i9yDV0JwWNz0YuOWQPiAFeF0AX7n+t2cfzCoq5OQJo4VpNScVcubm2bAwVS3PBU7ir+G6XLaODO1msnEbu1QanRZhHQtB488pPoh6ZIt5MW8M2rKeVAOQhz8v2ear1IUkBgMmvzTz99N+xjgUnW85w9ucIG9n4qo4xvC/i+mHYI5sbAFZMnI6fxFaAJrnLbExX21di2xpSoKEJcR/bLMU2Kn3FP6InKG5QRhxZ/+UuYGPO3ZOeMfePaV359fSVo6sDToIbz2ANIV2BztAHaI7+BrP4JTtWaeS+p475NB1HY1YEbnoCq1/3MtZhYYyV0I9miaYQW1S4YbT8YT9+m6YTmOciCqsoyWQhz5lNYbJTPg4ha4Ti0hM9afye0N1Nq9yZFZqIfkFoXMvQe14Pljbs4+L6JpH+KZUuulJkIoL6aQZ/oJ0w3qEIdnHkmrJjXGoLQFEg851C3VUqrCsIw6kIR/OvSwponlfRZnOMFE9Sqg83nzlVd+U91jfRmssWqQuQOZJCYsXDDHFtjoknj2981SJxeegi860=
+  file:
+    - build/libs/triplea-all.jar
+#    - build/releases/triplea_unix_.sh
+  skip_cleanup: true
+  on:
+    repo: DanVanAtta/triplea
