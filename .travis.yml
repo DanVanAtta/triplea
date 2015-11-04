@@ -16,9 +16,9 @@ before_deploy:
 - chmod +x install4j_unix.sh
 - ./install4j_unix.sh -q
 - wget -O jre-8u66-macosx-x64.tar.gz http://github.com/triplea-game/assets/blob/master/install4j/jre-8u66-macosx-x64.tar.gz?raw=true
-- mv jre-8u66-macosx-x64.tar.gz ~/install4j6/jres
+- mv jre-8u66-macosx-x64.tar.gz ~/install4j6/jres/
 - wget -O jre-8u66-windows-x86.tar.gz http://github.com/triplea-game/assets/blob/master/install4j/jre-8u66-windows-x64.tar.gz?raw=true
-- mv jre-8u66-windows-x64.tar.gz ~/install4j6/jres
+- mv jre-8u66-windows-x86.tar.gz ~/install4j6/jres/
 - mkdir -p ~/.gradle
 - grep -q "install4jHomeDir" ~/.gradle/gradle.properties 2> /dev/null || echo "install4jHomeDir=$(cd ~ && pwd)/install4j6" >> ~/.gradle/gradle.properties
 - ~/install4j6/bin/install4jc -L $INSTALL4J_LICENSE
