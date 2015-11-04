@@ -24,21 +24,12 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: nxaqYrkXLGL3W20/eCnf63DLjMrQAhEuW44jggh1/nI383goa+u6w0bBtWCxRdVzos7t4dpVfS6+kv6oIHacm9zVA+RYrqy5opzCJhq8lmXVVRijbALzUeiFif2HURMaKWj0ynRNVlAyBHzazPTLZVWywifpdSubSkuMWkl20cmuKu/Hg3c1EC9se3OYhhTHx3Hya7xSrctrDEYLsEBAUZzkKfscqRVqwwltS88CgIMtRISDpSBGrtH0t1uAH6NitTSguGgb+QEpqnELcRLymX2G1yzMA4Xr5c/L34MfbBKf8vIuG9t411xYuLoyKoUbroTWxSnPwlSy6PHz+QJ7UCXbDkATOGO3chxlKxglppvI/G3n2YP5Zf2dAaDlHblpvarh55i/4i4sKB2AbvvzkIHrQJwUgmLCbpN8/Vp9GWcGkd6i5U7F8tNInCs6ttX3oGvGOfYEXs02Ctyiea4LAqk4S7GZTuV2QXqxXglL4eRIwZ4UETiwgoAAtHma63Eq7+9t2ykMlk7zAK96FGwJrB97wa08aPuSxL94IYEBmn9Ht/vKXRiNQMvpnfp4rWQtL3cqbVyYAg5EjKb4PsBmnb91+RXtnWFOY1RpZGt8sPXYd+KZYzN1BXTFJEpaLLsIDN6r7nMcAvJDUmucaM+m7giPXz1ZBGAic3UBM1qMCgI=
-  file: build/libs/triplea-all.jar
-  skip_cleanup: true
-  prerelease: true
-  on:
-    repo: triplea-game/triplea
-    tags: false
-    all_branches: true
-deploy:
-  provider: releases
-  api_key:
     secure: gpvfUfIvgL3a99PiGZtTbFKptC08P0RceEfkEsDS5UZP3al5SNgppPeDjU1kQFAQ2yXtNOtWIgiTRL4LFYE5jUcjo9jHQyDrbfZFSHLfLAU9WWIvZl3UtVLgHGBm3F7yPY7RQZGlo5i9yDV0JwWNz0YuOWQPiAFeF0AX7n+t2cfzCoq5OQJo4VpNScVcubm2bAwVS3PBU7ir+G6XLaODO1msnEbu1QanRZhHQtB488pPoh6ZIt5MW8M2rKeVAOQhz8v2ear1IUkBgMmvzTz99N+xjgUnW85w9ucIG9n4qo4xvC/i+mHYI5sbAFZMnI6fxFaAJrnLbExX21di2xpSoKEJcR/bLMU2Kn3FP6InKG5QRhxZ/+UuYGPO3ZOeMfePaV359fSVo6sDToIbz2ANIV2BztAHaI7+BrP4JTtWaeS+p475NB1HY1YEbnoCq1/3MtZhYYyV0I9miaYQW1S4YbT8YT9+m6YTmOciCqsoyWQhz5lNYbJTPg4ha4Ti0hM9afye0N1Nq9yZFZqIfkFoXMvQe14Pljbs4+L6JpH+KZUuulJkIoL6aQZ/oJ0w3qEIdnHkmrJjXGoLQFEg851C3VUqrCsIw6kIR/OvSwponlfRZnOMFE9Sqg83nzlVd+U91jfRmssWqQuQOZJCYsXDDHFtjoknj2981SJxeegi860=
   file:
     - build/libs/triplea-all.jar
 #    - build/releases/triplea_unix_.sh
   skip_cleanup: true
   on:
+    tags: false
+    all_branches: true
     repo: DanVanAtta/triplea
