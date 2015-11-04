@@ -12,12 +12,12 @@ before_deploy:
 - git tag $TAGGED_VERSION -a -m "$TAGGED_VERSION"
 - echo 'git push -q https://$GITHUB_PERSONAL_ACCESS_TOKEN_FOR_TRAVIS@github.com/triplea-game/triplea --tags'
 - echo "Installing Install4j"
-- wget http://github.com/triplea-game/assets/blob/master/install4j/install4j_unix_6_0_4.sh
-- chmod +x install4j_unix_6_0_4.sh
-- ./install4j_unix_6_0_4.sh -q
-- wget http://github.com/triplea-game/assets/blob/master/install4j/jre-8u66-macosx-x64.tar.gz
+- wget -O install4j_unix.sh http://github.com/triplea-game/assets/blob/master/install4j/install4j_unix_6_0_4.sh?raw=true
+- chmod +x install4j_unix.sh
+- ./install4j_unix.sh -q
+- wget -O jre-8u66-macosx-x64.tar.gz http://github.com/triplea-game/assets/blob/master/install4j/jre-8u66-macosx-x64.tar.gz?raw=true
 - mv jre-8u66-macosx-x64.tar.gz ~/install4j6/jres
-- wget http://github.com/triplea-game/assets/blob/master/install4j/jre-8u66-windows-x64.tar.gz
+- wget -O jre-8u66-windows-x86.tar.gz http://github.com/triplea-game/assets/blob/master/install4j/jre-8u66-windows-x64.tar.gz?raw=true
 - mv jre-8u66-windows-x64.tar.gz ~/install4j6/jres
 - mkdir -p ~/.gradle
 - grep -q "install4jHomeDir" ~/.gradle/gradle.properties 2> /dev/null || echo "install4jHomeDir=$(cd ~ && pwd)/install4j6" >> ~/.gradle/gradle.properties
