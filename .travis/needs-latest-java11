@@ -1,5 +1,10 @@
 #!/bin/bash
 
 cd $JAVA_HOME
-ls | grep -q openjdk11
+
+if find . -maxdepth 1 -type d -name "openjdk11" | grep -q openjdk11; then
+  exit 0;
+else
+  exit 1;
+fi
 
