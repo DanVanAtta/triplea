@@ -3,6 +3,7 @@ sudo: false
 language: java
 if: tag is blank
 
+before_install: ./.travis/install-latest-java11
 
 # Note: Travis generally does not allocate more than 5 VMs at once.
 # Avoid running more than 5 jobs in parallel. Try to keep the jobs
@@ -12,7 +13,6 @@ jobs:
     - stage: verify
       env: DESCRIPTION="static verification"
       jdk: oraclejdk11
-      before_install: ./.travis/install-latest-java11
       install: skip
       script:
         ## shellcheck all shell scripts
@@ -22,7 +22,7 @@ jobs:
       env: DESCRIPTION=integTest
       jdk: oraclejdk11
       addons: {postgresql: "10"}
-      before_install: ./.travis/install-latest-java11
+#      before_install: ./.travis/install-latest-java11
       install: skip
       script:
         - ./.travis/setup_database &
@@ -37,7 +37,7 @@ jobs:
       addons: {postgresql: "10"}
       jdk: oraclejdk11
       env: DESCRIPTION="JDK11 unitTests and Test Coverage"
-      before_install: ./.travis/install-latest-java11
+ #     before_install: ./.travis/install-latest-java11
       install: skip
       script:
         - ./gradlew --parallel test jacocoTestReport
@@ -53,7 +53,7 @@ jobs:
         - ./.travis/run_smoke_tests
     - stage: deploy
       if: (branch = master) and (repo = 'triplea-game/triplea') and (type != 'pull_request')
-      before_install: ./.travis/install-latest-java11
+  #    before_install: ./.travis/install-latest-java11
       install: skip
       script:
         - ./.travis/setup_gpg
