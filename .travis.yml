@@ -3,6 +3,14 @@ sudo: false
 language: java
 if: tag is blank
 
+before_install:
+  - cd "$JAVA_HOME/../"
+  - rm -rf "$JAVA_HOME"
+  - wget "https://github.com/triplea-game/assets/raw/master/jdk-11.0.5_linux-x64_bin.tar.gz"
+  - tar -xzf jdk-11.0.5_linux-x64_bin.tar.gz
+  - cd -
+  - java --version
+
 # Note: Travis generally does not allocate more than 5 VMs at once.
 # Avoid running more than 5 jobs in parallel. Try to keep the jobs
 # balanced so that they each take about the same amount of time.
