@@ -4,15 +4,7 @@ language: java
 if: tag is blank
 
 before_install:
-  - cd "$JAVA_HOME/../"
-  - ls
-  - wget "https://github.com/triplea-game/assets/raw/master/jdk-11.0.5_linux-x64_bin.tar.gz"
-  - tar -xzf jdk-11.0.5_linux-x64_bin.tar.gz
-  - export JAVA_HOME="$(pwd)/jdk-11.0.5"
-  - export PATH=${JAVA_HOME}/bin:$PATH
-  - cd -
-  - java --version
-
+  - ./.travis/needs-latest-java11 && ./.travis/install-latest-java11
 
 # Note: Travis generally does not allocate more than 5 VMs at once.
 # Avoid running more than 5 jobs in parallel. Try to keep the jobs

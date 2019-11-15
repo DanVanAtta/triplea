@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd $JAVA_HOME
+ls | grep -q openjdk11
+
