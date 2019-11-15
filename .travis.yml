@@ -5,6 +5,7 @@ if: tag is blank
 
 before_install:
   - cd "$JAVA_HOME/../"
+  - ls
   - rm -rf "$JAVA_HOME"
   - wget "https://github.com/triplea-game/assets/raw/master/jdk-11.0.5_linux-x64_bin.tar.gz"
   - tar -xzf jdk-11.0.5_linux-x64_bin.tar.gz
