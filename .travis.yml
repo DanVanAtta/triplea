@@ -2,10 +2,6 @@ dist: xenial
 sudo: false
 language: java
 if: tag is blank
-addons:
-  apt:
-    packages:
-      - openjdk-11-jdk
 
 # Note: Travis generally does not allocate more than 5 VMs at once.
 # Avoid running more than 5 jobs in parallel. Try to keep the jobs
