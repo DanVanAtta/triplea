@@ -14,7 +14,7 @@ jobs:
   include:
     - stage: verify
       env: DESCRIPTION="static verification"
-      jdk: openjdk11
+      jdk: oraclejdk11
       install: skip
       script:
         ## shellcheck all shell scripts
@@ -22,7 +22,7 @@ jobs:
         - ./gradlew --parallel validateYamls spotlessCheck checkstyleMain checkstyleTest pmdMain
     - stage: verify
       env: DESCRIPTION=integTest
-      jdk: openjdk11
+      jdk: oraclejdk11
       addons: {postgresql: "10"}
       install: skip
       script:
@@ -35,15 +35,16 @@ jobs:
       script:
         - ./gradlew --parallel test
     - stage: verify
-      jdk: openjdk11
+      addons: {postgresql: "10"}
+      jdk: oraclejdk11
       env: DESCRIPTION="JDK11 unitTests and Test Coverage"
       install: skip
       script:
         - ./gradlew --parallel test jacocoTestReport
         - bash <(curl -s https://codecov.io/bash)  # upload coverage report - https://github.com/codecov/example-gradle
     - stage: verify
-      jdk: openjdk11
       env: DESCRIPTION="Smoke Test"
+      jdk: oraclejdk11
       addons: {postgresql: "10"}
       install: skip
       script:
@@ -59,7 +60,7 @@ jobs:
         - sed -i "s/.0$/.$TRAVIS_BUILD_NUMBER/" game-core/src/main/resources/META-INF/triplea/product.properties
         - ./.travis/do_release
       deploy:
-        jdk: openjdk11
+        jdk: oraclejdk11
         provider: releases
         addons:
           apt:
