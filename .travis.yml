@@ -27,7 +27,7 @@ if: tag is blank
 jobs:
   include:
     - stage: deploy prerelease
-      #if: (tag ~= 'prod*') 
+      if: (tag ~= 'prod*') 
       addons:
         apt:
           packages:
@@ -46,4 +46,4 @@ jobs:
 
 after_failure:
   - echo "================ Build step 'after_failure' =================" > /dev/null
-  -  test "$TRAVIS_EVENT_TYPE" != "pull_request" && test "$TRAVIS_BRANCH" = master && ./.travis/report_build_status FAILURE
+  - test "$TRAVIS_EVENT_TYPE" != "pull_request" && test "$TRAVIS_BRANCH" = master && ./.travis/report_build_status FAILURE
