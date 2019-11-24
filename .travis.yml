@@ -27,7 +27,7 @@ if: tag is blank
 jobs:
   include:
     - stage: deploy prerelease
-      if: (tag ~= 'prod*') 
+      #if: (tag ~= 'prod*') 
       addons:
         apt:
           packages:
