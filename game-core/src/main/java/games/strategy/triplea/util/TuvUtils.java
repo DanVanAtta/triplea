@@ -41,14 +41,8 @@ public class TuvUtils {
    * @return a map of unit types to PU cost
    */
   public static IntegerMap<UnitType> getCostsForTuv(final PlayerId player, final GameData data) {
-    data.acquireReadLock();
-    final Resource pus;
-    try {
-      pus = data.getResourceList().getResource(Constants.PUS);
-    } finally {
-      data.releaseReadLock();
-    }
-
+    final Resource pus =
+        data.executeWithReadLock(() -> data.getResourceList().getResource(Constants.PUS));
     final IntegerMap<UnitType> costs = new IntegerMap<>();
     final ProductionFrontier frontier = player.getProductionFrontier();
     if (frontier != null) {
@@ -93,13 +87,8 @@ public class TuvUtils {
    */
   private static IntegerMap<UnitType> getCostsForTuvForAllPlayersMergedAndAveraged(
       final GameData data) {
-    data.acquireReadLock();
-    final Resource pus;
-    try {
-      pus = data.getResourceList().getResource(Constants.PUS);
-    } finally {
-      data.releaseReadLock();
-    }
+    final Resource pus =
+        data.executeWithReadLock(() -> data.getResourceList().getResource(Constants.PUS));
     final IntegerMap<UnitType> costs = new IntegerMap<>();
     final Map<UnitType, List<Integer>> differentCosts = new HashMap<>();
     for (final ProductionRule rule : data.getProductionRuleList().getProductionRules()) {
@@ -239,13 +228,8 @@ public class TuvUtils {
   private static Map<UnitType, ResourceCollection>
       getResourceCostsForTuvForAllPlayersMergedAndAveraged(final GameData data) {
     final Map<UnitType, ResourceCollection> average = new HashMap<>();
-    final Resource pus;
-    data.acquireReadLock();
-    try {
-      pus = data.getResourceList().getResource(Constants.PUS);
-    } finally {
-      data.releaseReadLock();
-    }
+    final Resource pus =
+        data.executeWithReadLock(() -> data.getResourceList().getResource(Constants.PUS));
     final IntegerMap<Resource> defaultMap = new IntegerMap<>();
     defaultMap.put(pus, 1);
     final ResourceCollection defaultResources = new ResourceCollection(data, defaultMap);

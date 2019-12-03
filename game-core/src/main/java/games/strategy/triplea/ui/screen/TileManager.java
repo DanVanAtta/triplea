@@ -187,77 +187,71 @@ public class TileManager {
 
   /** Re-renders all tiles. */
   public void resetTiles(final GameData data, final MapData mapData) {
-    data.acquireReadLock();
-    try {
-      acquireLock();
-      try {
-        for (final Tile tile : tiles) {
-          tile.clear();
-          final int x = tile.getBounds().x / TILE_SIZE;
-          final int y = tile.getBounds().y / TILE_SIZE;
-          tile.addDrawable(new BaseMapDrawable(x, y, uiContext));
-          tile.addDrawable(new ReliefMapDrawable(x, y, uiContext));
-        }
-        for (final Territory territory : data.getMap().getTerritories()) {
-          clearTerritory(territory);
-          drawTerritory(territory, data, mapData);
-        }
-        // add the decorations
-        final Map<Image, List<Point>> decorations = mapData.getDecorations();
-        for (final Entry<Image, List<Point>> entry : decorations.entrySet()) {
-          final Image img = entry.getKey();
-          for (final Point p : entry.getValue()) {
-            final DecoratorDrawable drawable = new DecoratorDrawable(p, img);
-            final Rectangle bounds =
-                new Rectangle(p.x, p.y, img.getWidth(null), img.getHeight(null));
-            for (final Tile t : getTiles(bounds)) {
-              t.addDrawable(drawable);
+    data.executeWithReadLock(
+        () -> {
+          acquireLock();
+          try {
+            for (final Tile tile : tiles) {
+              tile.clear();
+              final int x = tile.getBounds().x / TILE_SIZE;
+              final int y = tile.getBounds().y / TILE_SIZE;
+              tile.addDrawable(new BaseMapDrawable(x, y, uiContext));
+              tile.addDrawable(new ReliefMapDrawable(x, y, uiContext));
             }
+            for (final Territory territory : data.getMap().getTerritories()) {
+              clearTerritory(territory);
+              drawTerritory(territory, data, mapData);
+            }
+            // add the decorations
+            final Map<Image, List<Point>> decorations = mapData.getDecorations();
+            for (final Entry<Image, List<Point>> entry : decorations.entrySet()) {
+              final Image img = entry.getKey();
+              for (final Point p : entry.getValue()) {
+                final DecoratorDrawable drawable = new DecoratorDrawable(p, img);
+                final Rectangle bounds =
+                    new Rectangle(p.x, p.y, img.getWidth(null), img.getHeight(null));
+                for (final Tile t : getTiles(bounds)) {
+                  t.addDrawable(drawable);
+                }
+              }
+            }
+          } finally {
+            releaseLock();
           }
-        }
-      } finally {
-        releaseLock();
-      }
-    } finally {
-      data.releaseReadLock();
-    }
+        });
   }
 
   /** Re-renders all tiles that intersect any of the specified territories. */
   public void updateTerritories(
       final Collection<Territory> territories, final GameData data, final MapData mapData) {
-    data.acquireReadLock();
-    try {
-      acquireLock();
-      try {
-        if (territories == null) {
-          return;
-        }
-        for (final Territory territory : territories) {
-          updateTerritory(territory, data, mapData);
-        }
-      } finally {
-        releaseLock();
-      }
-    } finally {
-      data.releaseReadLock();
-    }
+    data.executeWithReadLock(
+        () -> {
+          acquireLock();
+          try {
+            if (territories == null) {
+              return;
+            }
+            for (final Territory territory : territories) {
+              updateTerritory(territory, data, mapData);
+            }
+          } finally {
+            releaseLock();
+          }
+        });
   }
 
   private void updateTerritory(
       final Territory territory, final GameData data, final MapData mapData) {
-    data.acquireReadLock();
-    try {
-      acquireLock();
-      try {
-        clearTerritory(territory);
-        drawTerritory(territory, data, mapData);
-      } finally {
-        releaseLock();
-      }
-    } finally {
-      data.releaseReadLock();
-    }
+    data.executeWithReadLock(
+        () -> {
+          acquireLock();
+          try {
+            clearTerritory(territory);
+            drawTerritory(territory, data, mapData);
+          } finally {
+            releaseLock();
+          }
+        });
   }
 
   private void clearTerritory(final Territory territory) {
@@ -536,28 +530,26 @@ public class TileManager {
     if (units == null) {
       return null;
     }
-    data.acquireReadLock();
-    try {
-      acquireLock();
-      try {
-        for (final UnitsDrawer drawer : allUnitDrawables) {
-          final List<Unit> drawerUnits = drawer.getUnits(data).getSecond();
-          if (!drawerUnits.isEmpty() && units.containsAll(drawerUnits)) {
-            final Point placementPoint = drawer.getPlacementPoint();
-            return new Rectangle(
-                placementPoint.x,
-                placementPoint.y,
-                uiContext.getUnitImageFactory().getUnitImageWidth(),
-                uiContext.getUnitImageFactory().getUnitImageHeight());
+    return data.executeWithReadLock(
+        () -> {
+          acquireLock();
+          try {
+            for (final UnitsDrawer drawer : allUnitDrawables) {
+              final List<Unit> drawerUnits = drawer.getUnits(data).getSecond();
+              if (!drawerUnits.isEmpty() && units.containsAll(drawerUnits)) {
+                final Point placementPoint = drawer.getPlacementPoint();
+                return new Rectangle(
+                    placementPoint.x,
+                    placementPoint.y,
+                    uiContext.getUnitImageFactory().getUnitImageWidth(),
+                    uiContext.getUnitImageFactory().getUnitImageHeight());
+              }
+            }
+            return null;
+          } finally {
+            releaseLock();
           }
-        }
-        return null;
-      } finally {
-        releaseLock();
-      }
-    } finally {
-      data.releaseReadLock();
-    }
+        });
   }
 
   /**
@@ -566,27 +558,26 @@ public class TileManager {
    */
   public Tuple<Territory, List<Unit>> getUnitsAtPoint(
       final double x, final double y, final GameData gameData) {
-    gameData.acquireReadLock();
-    try {
-      acquireLock();
-      try {
-        for (final UnitsDrawer drawer : allUnitDrawables) {
-          final Point placementPoint = drawer.getPlacementPoint();
-          if (x > placementPoint.x
-              && x < placementPoint.x + uiContext.getUnitImageFactory().getUnitImageWidth()) {
-            if (y > placementPoint.y
-                && y < placementPoint.y + uiContext.getUnitImageFactory().getUnitImageHeight()) {
-              return drawer.getUnits(gameData);
+    return gameData.executeWithReadLock(
+        () -> {
+          acquireLock();
+          try {
+            for (final UnitsDrawer drawer : allUnitDrawables) {
+              final Point placementPoint = drawer.getPlacementPoint();
+              if (x > placementPoint.x
+                  && x < placementPoint.x + uiContext.getUnitImageFactory().getUnitImageWidth()) {
+                if (y > placementPoint.y
+                    && y
+                        < placementPoint.y + uiContext.getUnitImageFactory().getUnitImageHeight()) {
+                  return drawer.getUnits(gameData);
+                }
+              }
             }
+            return null;
+          } finally {
+            releaseLock();
           }
-        }
-        return null;
-      } finally {
-        releaseLock();
-      }
-    } finally {
-      gameData.releaseReadLock();
-    }
+        });
   }
 
   public void setTerritoryOverlay(

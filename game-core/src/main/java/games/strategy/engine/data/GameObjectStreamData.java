@@ -59,25 +59,23 @@ public class GameObjectStreamData implements Externalizable {
   Named getReference(final GameData data) {
     checkNotNull(data);
 
-    data.acquireReadLock();
-    try {
-      switch (type) {
-        case PLAYERID:
-          return data.getPlayerList().getPlayerId(name);
-        case TERRITORY:
-          return data.getMap().getTerritory(name);
-        case UNITTYPE:
-          return data.getUnitTypeList().getUnitType(name);
-        case PRODUCTIONRULE:
-          return data.getProductionRuleList().getProductionRule(name);
-        case PRODUCTIONFRONTIER:
-          return data.getProductionFrontierList().getProductionFrontier(name);
-        default:
-          throw new IllegalStateException("Unknown type: " + type);
-      }
-    } finally {
-      data.releaseReadLock();
-    }
+    return data.executeWithReadLock(
+        () -> {
+          switch (type) {
+            case PLAYERID:
+              return data.getPlayerList().getPlayerId(name);
+            case TERRITORY:
+              return data.getMap().getTerritory(name);
+            case UNITTYPE:
+              return data.getUnitTypeList().getUnitType(name);
+            case PRODUCTIONRULE:
+              return data.getProductionRuleList().getProductionRule(name);
+            case PRODUCTIONFRONTIER:
+              return data.getProductionFrontierList().getProductionFrontier(name);
+            default:
+              throw new IllegalStateException("Unknown type: " + type);
+          }
+        });
   }
 
   @Override

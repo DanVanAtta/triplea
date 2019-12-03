@@ -85,16 +85,12 @@ public class ResourceCollection extends GameDataComponent {
   }
 
   public int getQuantity(final String name) {
-    getData().acquireReadLock();
-    try {
-      final Resource resource = getData().getResourceList().getResource(name);
-      if (resource == null) {
-        throw new IllegalArgumentException("No resource named:" + name);
-      }
-      return getQuantity(resource);
-    } finally {
-      getData().releaseReadLock();
+    final Resource resource =
+        getData().executeWithReadLock(() -> getData().getResourceList().getResource(name));
+    if (resource == null) {
+      throw new IllegalArgumentException("No resource named:" + name);
     }
+    return getQuantity(resource);
   }
 
   public boolean has(final IntegerMap<Resource> map) {
@@ -175,23 +171,25 @@ public class ResourceCollection extends GameDataComponent {
       return "nothing";
     }
     final StringBuilder sb = new StringBuilder();
-    Resource pus = null;
-    data.acquireReadLock();
-    try {
-      pus = data.getResourceList().getResource(Constants.PUS);
-    } catch (final NullPointerException e) {
-      // we are getting null pointers here occasionally on deserializing game saves, because
-      // data.getResourceList() is
-      // still null at this point
-      for (final Resource r : resources.keySet()) {
-        if (r.getName().equals(Constants.PUS)) {
-          pus = r;
-          break;
-        }
-      }
-    } finally {
-      data.releaseReadLock();
-    }
+    final Resource pus =
+        data.executeWithReadLock(
+            () -> {
+              try {
+                return data.getResourceList().getResource(Constants.PUS);
+              } catch (final NullPointerException e) {
+                // we are getting null pointers here occasionally on deserializing game saves,
+                // because
+                // data.getResourceList() is
+                // still null at this point
+                for (final Resource r : resources.keySet()) {
+                  if (r.getName().equals(Constants.PUS)) {
+                    return r;
+                  }
+                }
+              }
+              return null;
+            });
+
     if (pus == null) {
       throw new IllegalStateException("Possible deserialization error: PUs is null");
     }

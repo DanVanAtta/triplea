@@ -26,13 +26,6 @@ public abstract class AbstractStat implements IStat {
   }
 
   protected static Resource getResourcePUs(final GameData data) {
-    final Resource pus;
-    try {
-      data.acquireReadLock();
-      pus = data.getResourceList().getResource(Constants.PUS);
-    } finally {
-      data.releaseReadLock();
-    }
-    return pus;
+    return data.executeWithReadLock(() -> data.getResourceList().getResource(Constants.PUS));
   }
 }

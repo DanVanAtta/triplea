@@ -80,88 +80,84 @@ public class UnitType extends NamedAttachable {
   public static Map<PlayerId, List<UnitType>> getAllPlayerUnitsWithImages(
       final GameData data, final UiContext uiContext, final boolean forceIncludeNeutralPlayer) {
     final LinkedHashMap<PlayerId, List<UnitType>> unitTypes = new LinkedHashMap<>();
-    data.acquireReadLock();
-    try {
-      for (final PlayerId p : data.getPlayerList().getPlayers()) {
-        unitTypes.put(p, getPlayerUnitsWithImages(p, data, uiContext));
-      }
-      final Set<UnitType> unitsSoFar = new HashSet<>();
-      for (final List<UnitType> l : unitTypes.values()) {
-        unitsSoFar.addAll(l);
-      }
-      final Set<UnitType> all = data.getUnitTypeList().getAllUnitTypes();
-      all.removeAll(unitsSoFar);
-      if (forceIncludeNeutralPlayer || !all.isEmpty()) {
-        unitTypes.put(
-            PlayerId.NULL_PLAYERID,
-            getPlayerUnitsWithImages(PlayerId.NULL_PLAYERID, data, uiContext));
-        unitsSoFar.addAll(unitTypes.get(PlayerId.NULL_PLAYERID));
-        all.removeAll(unitsSoFar);
-        if (!all.isEmpty()) {
-          unitTypes.put(null, new ArrayList<>(all));
-        }
-      }
-    } finally {
-      data.releaseReadLock();
-    }
+    data.executeWithReadLock(
+        () -> {
+          for (final PlayerId p : data.getPlayerList().getPlayers()) {
+            unitTypes.put(p, getPlayerUnitsWithImages(p, data, uiContext));
+          }
+          final Set<UnitType> unitsSoFar = new HashSet<>();
+          for (final List<UnitType> l : unitTypes.values()) {
+            unitsSoFar.addAll(l);
+          }
+          final Set<UnitType> all = data.getUnitTypeList().getAllUnitTypes();
+          all.removeAll(unitsSoFar);
+          if (forceIncludeNeutralPlayer || !all.isEmpty()) {
+            unitTypes.put(
+                PlayerId.NULL_PLAYERID,
+                getPlayerUnitsWithImages(PlayerId.NULL_PLAYERID, data, uiContext));
+            unitsSoFar.addAll(unitTypes.get(PlayerId.NULL_PLAYERID));
+            all.removeAll(unitsSoFar);
+            if (!all.isEmpty()) {
+              unitTypes.put(null, new ArrayList<>(all));
+            }
+          }
+        });
     return unitTypes;
   }
 
   private static List<UnitType> getPlayerUnitsWithImages(
       final PlayerId player, final GameData data, final UiContext uiContext) {
     final List<UnitType> unitTypes = new ArrayList<>();
-    data.acquireReadLock();
-    try {
-      // add first based on current production ability
-      if (player.getProductionFrontier() != null) {
-        for (final ProductionRule productionRule : player.getProductionFrontier()) {
-          for (final Entry<NamedAttachable, Integer> entry :
-              productionRule.getResults().entrySet()) {
-            if (UnitType.class.isAssignableFrom(entry.getKey().getClass())) {
-              final UnitType ut = (UnitType) entry.getKey();
-              if (!unitTypes.contains(ut)) {
-                unitTypes.add(ut);
+    data.executeWithReadLock(
+        () -> {
+          // add first based on current production ability
+          if (player.getProductionFrontier() != null) {
+            for (final ProductionRule productionRule : player.getProductionFrontier()) {
+              for (final Entry<NamedAttachable, Integer> entry :
+                  productionRule.getResults().entrySet()) {
+                if (UnitType.class.isAssignableFrom(entry.getKey().getClass())) {
+                  final UnitType ut = (UnitType) entry.getKey();
+                  if (!unitTypes.contains(ut)) {
+                    unitTypes.add(ut);
+                  }
+                }
               }
             }
           }
-        }
-      }
-      // this next part is purely to allow people to "add" neutral (null player) units to
-      // territories.
-      // This is because the null player does not have a production frontier, and we also do not
-      // know what units we have
-      // art for, so only use the units on a map.
-      for (final Territory t : data.getMap()) {
-        for (final Unit u : t.getUnitCollection()) {
-          if (u.getOwner().equals(player)) {
-            final UnitType ut = u.getType();
-            if (!unitTypes.contains(ut)) {
-              unitTypes.add(ut);
-            }
-          }
-        }
-      }
-      // now check if we have the art for anything that is left
-      for (final UnitType ut : data.getUnitTypeList().getAllUnitTypes()) {
-        if (!unitTypes.contains(ut)) {
-          try {
-            final UnitImageFactory imageFactory = uiContext.getUnitImageFactory();
-            if (imageFactory != null) {
-              final Optional<Image> unitImage = imageFactory.getImage(ut, player, false, false);
-              if (unitImage.isPresent()) {
+          // this next part is purely to allow people to "add" neutral (null player) units to
+          // territories.
+          // This is because the null player does not have a production frontier, and we also do not
+          // know what units we have
+          // art for, so only use the units on a map.
+          for (final Territory t : data.getMap()) {
+            for (final Unit u : t.getUnitCollection()) {
+              if (u.getOwner().equals(player)) {
+                final UnitType ut = u.getType();
                 if (!unitTypes.contains(ut)) {
                   unitTypes.add(ut);
                 }
               }
             }
-          } catch (final Exception e) {
-            log.log(Level.SEVERE, "Exception while drawing unit type: " + ut + ", ", e);
           }
-        }
-      }
-    } finally {
-      data.releaseReadLock();
-    }
+          // now check if we have the art for anything that is left
+          for (final UnitType ut : data.getUnitTypeList().getAllUnitTypes()) {
+            if (!unitTypes.contains(ut)) {
+              try {
+                final UnitImageFactory imageFactory = uiContext.getUnitImageFactory();
+                if (imageFactory != null) {
+                  final Optional<Image> unitImage = imageFactory.getImage(ut, player, false, false);
+                  if (unitImage.isPresent()) {
+                    if (!unitTypes.contains(ut)) {
+                      unitTypes.add(ut);
+                    }
+                  }
+                }
+              } catch (final Exception e) {
+                log.log(Level.SEVERE, "Exception while drawing unit type: " + ut + ", ", e);
+              }
+            }
+          }
+        });
     return unitTypes;
   }
 }

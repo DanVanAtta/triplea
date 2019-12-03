@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Supplier;
 import javax.swing.SwingUtilities;
 import org.triplea.io.IoUtils;
 import org.triplea.thread.LockUtil;
@@ -325,22 +326,37 @@ public class GameData implements Serializable {
     delegates = new HashMap<>();
   }
 
+  public void acquireReadLock() {
+  }
+
   /**
    * No changes to the game data should be made unless this lock is held. calls to acquire lock will
    * block if the lock is held, and will be held until the release method is called
    */
-  public void acquireReadLock() {
-    if (readWriteLockMissing()) {
-      return;
-    }
-    lockUtil.acquireLock(readWriteLock.readLock());
+  public void executeWithReadLock(final Runnable runnable) {
+    executeWithReadLock(
+        () -> {
+          runnable.run();
+          return null;
+        });
   }
 
-  public void releaseReadLock() {
+  /**
+   * No changes to the game data should be made unless this lock is held. calls to acquire lock will
+   * block if the lock is held, and will be held until the release method is called
+   */
+  public <T> T executeWithReadLock(Supplier<T> supplier) {
     if (readWriteLockMissing()) {
-      return;
+      // TODO: log this.
+      return supplier.get();
     }
-    lockUtil.releaseLock(readWriteLock.readLock());
+    
+    try {
+      lockUtil.acquireLock(readWriteLock.readLock());
+      return supplier.get();
+    } finally {
+      lockUtil.releaseLock(readWriteLock.readLock());
+    }
   }
 
   /**
@@ -443,12 +459,7 @@ public class GameData implements Serializable {
     if (areChangesOnlyInSwingEventThread() && !SwingUtilities.isEventDispatchThread()) {
       throw new IllegalStateException("Wrong thread");
     }
-    try {
-      acquireWriteLock();
-      change.perform(this);
-    } finally {
-      releaseWriteLock();
-    }
+    acquireWriteLock(() -> change.perform(this));
     dataChangeListeners.forEach(dataChangelistener -> dataChangelistener.gameDataChanged(change));
     GameDataEvent.lookupEvent(change).ifPresent(this::fireGameDataEvent);
   }
@@ -470,11 +481,6 @@ public class GameData implements Serializable {
    * the lock will have been to no effect anyways!
    */
   public int getCurrentRound() {
-    try {
-      acquireReadLock();
-      return getSequence().getRound();
-    } finally {
-      releaseReadLock();
-    }
+    return executeWithReadLock(() -> getSequence().getRound());
   }
 }

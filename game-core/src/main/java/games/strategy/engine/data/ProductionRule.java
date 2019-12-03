@@ -59,13 +59,8 @@ public class ProductionRule extends DefaultNamed {
    */
   public String toStringCosts() {
     final StringBuilder sb = new StringBuilder();
-    getData().acquireReadLock();
-    final Resource pus;
-    try {
-      pus = getData().getResourceList().getResource(Constants.PUS);
-    } finally {
-      getData().releaseReadLock();
-    }
+    final Resource pus =
+        getData().executeWithReadLock(() -> getData().getResourceList().getResource(Constants.PUS));
     if (costs.getInt(pus) != 0) {
       sb.append("; ");
       sb.append(costs.getInt(pus));

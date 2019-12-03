@@ -57,14 +57,9 @@ public class ResourceImageFactory extends AbstractImageFactory {
   private JPanel getResourcesPanel(
       final ResourceCollection resources, final boolean showEmpty, final PlayerId player) {
     final JPanel resourcePanel = new JPanel();
-    final List<Resource> resourcesInOrder;
     final GameData data = resources.getData();
-    data.acquireReadLock();
-    try {
-      resourcesInOrder = data.getResourceList().getResources();
-    } finally {
-      data.releaseReadLock();
-    }
+    final List<Resource> resourcesInOrder =
+        data.executeWithReadLock(() -> data.getResourceList().getResources());
     int count = 0;
     for (final Resource resource : resourcesInOrder) {
       if ((player != null && !resource.isDisplayedFor(player))

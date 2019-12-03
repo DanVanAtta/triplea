@@ -103,12 +103,8 @@ public class HistorySynchronizer {
     }
     gameData = data;
     gameData.forceChangesOnlyInSwingEventThread();
-    data.acquireReadLock();
-    try {
-      currentRound = data.getSequence().getRound();
-    } finally {
-      data.releaseReadLock();
-    }
+
+    currentRound = data.executeWithReadLock(() -> data.getSequence().getRound());
     this.game = game;
     this.game
         .getMessengers()

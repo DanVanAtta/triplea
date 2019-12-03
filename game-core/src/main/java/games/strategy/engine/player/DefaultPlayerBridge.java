@@ -58,34 +58,34 @@ public class DefaultPlayerBridge implements IPlayerBridge {
       throw new GameOverException("Game Over");
     }
     try {
-      game.getData().acquireReadLock();
-      try {
-        final IDelegate delegate = game.getData().getDelegate(currentDelegate);
-        // TODO: before converting this Preconditions check to checkNotNull, make sure we do not
-        // depend on the illegal state exception type in a catch block.
-        Preconditions.checkState(
-            delegate != null,
-            "IDelegate in DefaultPlayerBridge.getRemote() cannot be null. CurrentStep: "
-                + stepName
-                + ", and CurrentDelegate: "
-                + currentDelegate);
-        final RemoteName remoteName;
-        try {
-          remoteName = ServerGame.getRemoteName(delegate);
-        } catch (final Exception e) {
-          final String errorMessage =
-              "IDelegate IRemote interface class returned null or was not correct "
-                  + "interface. CurrentStep: "
-                  + stepName
-                  + ", and CurrentDelegate: "
-                  + currentDelegate;
-          log.log(Level.SEVERE, errorMessage, e);
-          throw new IllegalStateException(errorMessage, e);
-        }
-        return getRemoteThatChecksForGameOver(game.getMessengers().getRemote(remoteName));
-      } finally {
-        game.getData().releaseReadLock();
-      }
+      return game.getData()
+          .executeWithReadLock(
+              () -> {
+                final IDelegate delegate = game.getData().getDelegate(currentDelegate);
+                // TODO: before converting this Preconditions check to checkNotNull, make sure we do
+                // not
+                // depend on the illegal state exception type in a catch block.
+                Preconditions.checkState(
+                    delegate != null,
+                    "IDelegate in DefaultPlayerBridge.getRemote() cannot be null. CurrentStep: "
+                        + stepName
+                        + ", and CurrentDelegate: "
+                        + currentDelegate);
+                final RemoteName remoteName;
+                try {
+                  remoteName = ServerGame.getRemoteName(delegate);
+                } catch (final Exception e) {
+                  final String errorMessage =
+                      "IDelegate IRemote interface class returned null or was not correct "
+                          + "interface. CurrentStep: "
+                          + stepName
+                          + ", and CurrentDelegate: "
+                          + currentDelegate;
+                  log.log(Level.SEVERE, errorMessage, e);
+                  throw new IllegalStateException(errorMessage, e);
+                }
+                return getRemoteThatChecksForGameOver(game.getMessengers().getRemote(remoteName));
+              });
     } catch (final RuntimeException e) {
       if (e.getCause() instanceof MessengerException) {
         // TODO: this kind of conversion does not seem appropriate. Maybe MessengerException should
@@ -104,24 +104,23 @@ public class DefaultPlayerBridge implements IPlayerBridge {
       throw new GameOverException("Game Over");
     }
     try {
-      game.getData().acquireReadLock();
-      try {
-        final IDelegate delegate = game.getData().getDelegate(name);
-        if (delegate == null) {
-          final String errorMessage =
-              "IDelegate in DefaultPlayerBridge.getRemote() cannot be null. "
-                  + "Looking for delegate named: "
-                  + name;
-          throw new IllegalStateException(errorMessage);
-        }
-        if (!(delegate instanceof IPersistentDelegate)) {
-          return null;
-        }
-        return getRemoteThatChecksForGameOver(
-            game.getMessengers().getRemote(ServerGame.getRemoteName(delegate)));
-      } finally {
-        game.getData().releaseReadLock();
-      }
+      return game.getData()
+          .executeWithReadLock(
+              () -> {
+                final IDelegate delegate = game.getData().getDelegate(name);
+                if (delegate == null) {
+                  final String errorMessage =
+                      "IDelegate in DefaultPlayerBridge.getRemote() cannot be null. "
+                          + "Looking for delegate named: "
+                          + name;
+                  throw new IllegalStateException(errorMessage);
+                }
+                if (!(delegate instanceof IPersistentDelegate)) {
+                  return null;
+                }
+                return getRemoteThatChecksForGameOver(
+                    game.getMessengers().getRemote(ServerGame.getRemoteName(delegate)));
+              });
     } catch (final RuntimeException e) {
       if (e.getCause() instanceof MessengerException) {
         throw new GameOverException("Game Over!", e);

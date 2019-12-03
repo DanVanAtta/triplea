@@ -76,44 +76,43 @@ public class ClientGame extends AbstractGame {
             if (firstRun) {
               firstRun = false;
             } else {
-              gameData.acquireWriteLock();
-              try {
-                gameData.getSequence().next();
-                final int ourOriginalCurrentRound = gameData.getSequence().getRound();
-                int currentRound = ourOriginalCurrentRound;
-                if (gameData.getSequence().testWeAreOnLastStep()) {
-                  gameData.getHistory().getHistoryWriter().startNextRound(++currentRound);
-                }
-                while (!gameData.getSequence().getStep().getName().equals(stepName)
-                    || !gameData.getSequence().getStep().getPlayerId().equals(player)
-                    || !gameData
-                        .getSequence()
-                        .getStep()
-                        .getDelegate()
-                        .getName()
-                        .equals(delegateName)) {
-                  gameData.getSequence().next();
-                  if (gameData.getSequence().testWeAreOnLastStep()) {
-                    gameData.getHistory().getHistoryWriter().startNextRound(++currentRound);
-                  }
-                }
-                // TODO: this is causing problems if the very last step is a client step. we end up
-                // creating a new round
-                // before the host's rounds has started.
-                // right now, fixing it with a hack. but in reality we probably need to have a
-                // better way of determining
-                // when a new round has started (like with a roundChanged listener).
-                if ((currentRound - 1 > round && ourOriginalCurrentRound >= round)
-                    || (currentRound > round && ourOriginalCurrentRound < round)) {
-                  throw new IllegalStateException(
-                      "Cannot create more rounds that host currently has. Host Round:"
-                          + round
-                          + " and new Client Round:"
-                          + currentRound);
-                }
-              } finally {
-                gameData.releaseWriteLock();
-              }
+              gameData.acquireWriteLock(
+                  () -> {
+                    gameData.getSequence().next();
+                    final int ourOriginalCurrentRound = gameData.getSequence().getRound();
+                    int currentRound = ourOriginalCurrentRound;
+                    if (gameData.getSequence().testWeAreOnLastStep()) {
+                      gameData.getHistory().getHistoryWriter().startNextRound(++currentRound);
+                    }
+                    while (!gameData.getSequence().getStep().getName().equals(stepName)
+                        || !gameData.getSequence().getStep().getPlayerId().equals(player)
+                        || !gameData
+                            .getSequence()
+                            .getStep()
+                            .getDelegate()
+                            .getName()
+                            .equals(delegateName)) {
+                      gameData.getSequence().next();
+                      if (gameData.getSequence().testWeAreOnLastStep()) {
+                        gameData.getHistory().getHistoryWriter().startNextRound(++currentRound);
+                      }
+                    }
+                    // TODO: this is causing problems if the very last step is a client step. we end
+                    // up
+                    // creating a new round
+                    // before the host's rounds has started.
+                    // right now, fixing it with a hack. but in reality we probably need to have a
+                    // better way of determining
+                    // when a new round has started (like with a roundChanged listener).
+                    if ((currentRound - 1 > round && ourOriginalCurrentRound >= round)
+                        || (currentRound > round && ourOriginalCurrentRound < round)) {
+                      throw new IllegalStateException(
+                          "Cannot create more rounds that host currently has. Host Round:"
+                              + round
+                              + " and new Client Round:"
+                              + currentRound);
+                    }
+                  });
             }
             if (!loadedFromSavedGame) {
               gameData
@@ -143,15 +142,12 @@ public class ClientGame extends AbstractGame {
             int i = 0;
             boolean shownErrorMessage = false;
             while (true) {
-              gameData.acquireReadLock();
-              try {
-                if (gameData.getSequence().getStep().getName().equals(stepName) || isGameOver) {
-                  break;
-                }
-              } finally {
-                gameData.releaseReadLock();
-              }
-              if (!Interruptibles.sleep(100)) {
+              final boolean quit =
+                  gameData.executeWithReadLock(
+                      () ->
+                          gameData.getSequence().getStep().getName().equals(stepName)
+                              || isGameOver);
+              if (quit || !Interruptibles.sleep(100)) {
                 break;
               }
               i++;
@@ -201,17 +197,13 @@ public class ClientGame extends AbstractGame {
       messengers.unregisterChannelSubscriber(gameModifiedChannel, IGame.GAME_MODIFICATION_CHANNEL);
       messengers.unregisterRemote(getRemoteStepAdvancerName(messengers.getLocalNode()));
       vault.shutDown();
-      for (final Player gp : gamePlayers.values()) {
-        final PlayerId player;
-        gameData.acquireReadLock();
-        try {
-          player = gameData.getPlayerList().getPlayerId(gp.getName());
-        } finally {
-          gameData.releaseReadLock();
-        }
-        gamePlayers.put(player, gp);
-        messengers.unregisterRemote(ServerGame.getRemoteName(gp.getPlayerId()));
-        messengers.unregisterRemote(ServerGame.getRemoteRandomName(player));
+      for (final Player gamePlayer : gamePlayers.values()) {
+        final PlayerId playerId =
+            gameData.executeWithReadLock(
+                () -> gameData.getPlayerList().getPlayerId(gamePlayer.getName()));
+        gamePlayers.put(playerId, gamePlayer);
+        messengers.unregisterRemote(ServerGame.getRemoteName(gamePlayer.getPlayerId()));
+        messengers.unregisterRemote(ServerGame.getRemoteRandomName(playerId));
       }
     } catch (final RuntimeException e) {
       log.log(Level.SEVERE, "Failed to shut down client game", e);
