@@ -326,8 +326,7 @@ public class GameData implements Serializable {
     delegates = new HashMap<>();
   }
 
-  public void acquireReadLock() {
-  }
+  public void acquireReadLock() {}
 
   /**
    * No changes to the game data should be made unless this lock is held. calls to acquire lock will
@@ -350,7 +349,7 @@ public class GameData implements Serializable {
       // TODO: log this.
       return supplier.get();
     }
-    
+
     try {
       lockUtil.acquireLock(readWriteLock.readLock());
       return supplier.get();
