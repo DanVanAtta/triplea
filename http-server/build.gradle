@@ -22,6 +22,8 @@ configurations {
 dependencies {
 // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
 compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+// https://mvnrepository.com/artifact/ch.qos.logback/logback-core
+compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
 
     implementation "com.liveperson:dropwizard-websockets:$dropwizardWebsocketsVersion"
     implementation "com.sun.mail:jakarta.mail:$jakartaMailVersion"
