@@ -38,6 +38,7 @@ compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
     implementation project(':java-extras')
     implementation project(':lobby-db-dao')
     runtimeOnly "org.postgresql:postgresql:$postgresqlVersion"
+    testImplementation "org.awaitility:awaitility:$awaitilityVersion"
     testImplementation "com.github.database-rider:rider-junit5:$databaseRiderVersion"
     testImplementation "io.dropwizard:dropwizard-testing:$dropwizardVersion"
     testImplementation "org.java-websocket:Java-WebSocket:$javaWebsocketVersion"
