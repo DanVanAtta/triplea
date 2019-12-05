@@ -54,6 +54,7 @@ public class GameListingController extends HttpController {
       rates = {@Rate(limit = 5, duration = 1, timeUnit = TimeUnit.SECONDS)})
   @POST
   @Path(GameListingClient.REMOVE_GAME_PATH)
+  @RolesAllowed(UserRole.HOST)
   public Response removeGame(@Auth final AuthenticatedUser authenticatedUser, final String gameId) {
     gameListing.removeGame(authenticatedUser.getApiKey(), gameId);
     return Response.ok().build();
