@@ -3,16 +3,15 @@
 set -eu
 
 
-## Update product version to include build number.
-## EG: replace "2.0.0" to be "2.0.15555";
-sed -i "s/.0$/.$TRAVIS_BUILD_NUMBER/" game-core/src/main/resources/META-INF/triplea/product.properties
 
 ./gradlew :http-server:shadowJar
 
- # Http server output is suppressed by Travis when it is launched with gradle or when it is launched by the tests
- # themselves. Launching the server from jar file is a hack to work around this and allows server output to
- # be visible in travis logs.
-readonly RELEASE_VERSION=$(sed 's/version\s*=\s*//' game-core/src/main/resources/META-INF/triplea/product.properties)
-readonly HTTP_SERVER_JAR_PATH="http-server/build/libs/triplea-http-server-${RELEASE_VERSION}.jar"
+# Http-server is normally launched (if needed) by integration tests.
+# On Travis, the http-server output from this launch process is not printed.
+# To fix this, we launch an http-server explicitly and output is then 
+# successfully printed.  This is important so we can see error output 
+# if we have cases where tests 
+# fail only on Travis (EG: http-500)
+readonly HTTP_SERVER_JAR_PATH=$(find http-server/build/libs/ -type f -name "*.jar")
 java -jar "$HTTP_SERVER_JAR_PATH" server ./integration-testing/configuration-testing.yml &
 
