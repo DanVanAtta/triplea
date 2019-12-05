@@ -13,5 +13,5 @@ set -eu
 # if we have cases where tests 
 # fail only on Travis (EG: http-500)
 readonly HTTP_SERVER_JAR_PATH=$(find http-server/build/libs/ -type f -name "*.jar")
-java -jar "$HTTP_SERVER_JAR_PATH" server ./integration-testing/configuration-testing.yml &
+java -jar "$HTTP_SERVER_JAR_PATH" server ./http-server/configuration.yml &
 
