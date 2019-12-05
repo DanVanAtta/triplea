@@ -1,10 +1,7 @@
 package org.triplea.server.http;
 
-import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
-
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.junit5.DBUnitExtension;
-import io.dropwizard.testing.DropwizardTestSupport;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -29,25 +26,25 @@ public abstract class DropwizardTest {
       implements BeforeAllCallback, ExtensionContext.Store.CloseableResource {
     private static AtomicBoolean started = new AtomicBoolean(false);
 
-    private static final DropwizardTestSupport<AppConfig> support =
-        new DropwizardTestSupport<>(ServerApplication.class, "configuration-testing.yml");
+    //    private static final DropwizardTestSupport<AppConfig> support =
+    //        new DropwizardTestSupport<>(ServerApplication.class, "configuration-testing.yml");
 
     @Override
     public void beforeAll(final ExtensionContext context) {
-      if (started.compareAndSet(false, true)) {
-        try {
-          support.before();
-        } catch (final RuntimeException e) {
-          // ignore, server is already started
-        }
-        // register this extension so 'close' will be called after all tests execute
-        context.getRoot().getStore(GLOBAL).put("dropwizard-startup", this);
-      }
+      //      if (started.compareAndSet(false, true)) {
+      //        try {
+      //          support.before();
+      //        } catch (final RuntimeException e) {
+      //          // ignore, server is already started
+      //        }
+      //        // register this extension so 'close' will be called after all tests execute
+      //        context.getRoot().getStore(GLOBAL).put("dropwizard-startup", this);
+      //      }
     }
 
     @Override
     public void close() {
-      support.after();
+      //      support.after();
     }
   }
 }
