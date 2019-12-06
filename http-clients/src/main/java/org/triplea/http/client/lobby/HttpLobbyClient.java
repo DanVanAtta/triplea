@@ -4,7 +4,8 @@ import java.net.URI;
 import java.util.function.Consumer;
 import lombok.Getter;
 import org.triplea.domain.data.ApiKey;
-import org.triplea.http.client.lobby.chat.LobbyChatClient;
+import org.triplea.http.client.lobby.chat.LobbyChatListener;
+import org.triplea.http.client.lobby.chat.LobbyChatSender;
 import org.triplea.http.client.lobby.game.ConnectivityCheckClient;
 import org.triplea.http.client.lobby.game.listing.GameListingClient;
 import org.triplea.http.client.lobby.moderator.ModeratorChatClient;
@@ -17,7 +18,8 @@ public class HttpLobbyClient {
   private final ConnectivityCheckClient connectivityCheckClient;
   private final GameListingClient gameListingClient;
   private final HttpModeratorToolboxClient httpModeratorToolboxClient;
-  private final LobbyChatClient lobbyChatClient;
+  private final LobbyChatSender lobbyChatClient;
+  private final LobbyChatListener lobbyChatListener;
   private final ModeratorChatClient moderatorLobbyClient;
   private final UserAccountClient userAccountClient;
 
@@ -25,7 +27,8 @@ public class HttpLobbyClient {
     connectivityCheckClient = ConnectivityCheckClient.newClient(lobbyUri, apiKey);
     gameListingClient = GameListingClient.newClient(lobbyUri, apiKey);
     httpModeratorToolboxClient = HttpModeratorToolboxClient.newClient(lobbyUri, apiKey);
-    lobbyChatClient = LobbyChatClient.newClient(lobbyUri, apiKey);
+    lobbyChatClient = LobbyChatSender.newClient(lobbyUri, apiKey);
+    lobbyChatListener = new LobbyChatListener(lobbyUri);
     moderatorLobbyClient = ModeratorChatClient.newClient(lobbyUri, apiKey);
     userAccountClient = UserAccountClient.newClient(lobbyUri, apiKey);
   }
