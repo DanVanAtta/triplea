@@ -28,7 +28,6 @@ import org.triplea.server.http.HttpController;
 @AllArgsConstructor(
     access = AccessLevel.PACKAGE,
     onConstructor_ = {@VisibleForTesting})
-@RolesAllowed(UserRole.HOST)
 public class GameListingController extends HttpController {
 
   private final GameListing gameListing;
@@ -42,6 +41,7 @@ public class GameListingController extends HttpController {
       rates = {@Rate(limit = 20, duration = 4, timeUnit = TimeUnit.MINUTES)})
   @POST
   @Path(GameListingClient.POST_GAME_PATH)
+  @RolesAllowed(UserRole.HOST)
   public String postGame(
       @Auth final AuthenticatedUser authenticatedUser, final LobbyGame lobbyGame) {
     // TODO: Project#12 Combine availability check with gameListing.postGame
@@ -54,6 +54,7 @@ public class GameListingController extends HttpController {
       rates = {@Rate(limit = 5, duration = 1, timeUnit = TimeUnit.SECONDS)})
   @POST
   @Path(GameListingClient.REMOVE_GAME_PATH)
+  @RolesAllowed(UserRole.HOST)
   public Response removeGame(@Auth final AuthenticatedUser authenticatedUser, final String gameId) {
     gameListing.removeGame(authenticatedUser.getApiKey(), gameId);
     return Response.ok().build();
@@ -70,6 +71,7 @@ public class GameListingController extends HttpController {
       rates = {@Rate(limit = 5, duration = 1, timeUnit = TimeUnit.SECONDS)})
   @POST
   @Path(GameListingClient.KEEP_ALIVE_PATH)
+  @RolesAllowed(UserRole.HOST)
   public boolean keepAlive(@Auth final AuthenticatedUser authenticatedUser, final String gameId) {
     return gameListing.keepAlive(authenticatedUser.getApiKey(), gameId);
   }
@@ -80,6 +82,7 @@ public class GameListingController extends HttpController {
       rates = {@Rate(limit = 5, duration = 1, timeUnit = TimeUnit.SECONDS)})
   @GET
   @Path(GameListingClient.FETCH_GAMES_PATH)
+  @RolesAllowed(UserRole.ANONYMOUS)
   public Collection<LobbyGameListing> fetchGames() {
     return gameListing.getGames();
   }
@@ -90,6 +93,7 @@ public class GameListingController extends HttpController {
       rates = {@Rate(limit = 10, duration = 1, timeUnit = TimeUnit.SECONDS)})
   @POST
   @Path(GameListingClient.UPDATE_GAME_PATH)
+  @RolesAllowed(UserRole.HOST)
   public Response updateGame(
       @Auth final AuthenticatedUser authenticatedUser, final UpdateGameRequest updateGameRequest) {
     gameListing.updateGame(
