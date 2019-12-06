@@ -6,7 +6,8 @@ import lombok.extern.java.Log;
 import org.triplea.domain.data.PlayerName;
 import org.triplea.http.client.lobby.chat.ChatMessageListeners;
 import org.triplea.http.client.lobby.chat.ChatParticipant;
-import org.triplea.http.client.lobby.chat.LobbyChatClient;
+import org.triplea.http.client.lobby.chat.LobbyChatListener;
+import org.triplea.http.client.lobby.chat.LobbyChatSender;
 
 /**
  * Chat transmitter designed to work with lobby, sends and receives messages over Websocket. This
@@ -16,17 +17,19 @@ import org.triplea.http.client.lobby.chat.LobbyChatClient;
 // TODO: Project#12 test-me
 @Log
 public class LobbyChatTransmitter implements ChatTransmitter {
-  private final LobbyChatClient lobbyChatClient;
+  private final LobbyChatSender lobbyChatClient;
+  private final LobbyChatListener lobbyChatListener;
   private final PlayerName localPlayerName;
 
   public LobbyChatTransmitter(final LobbyClient lobbyClient) {
     this.localPlayerName = lobbyClient.getPlayerName();
     this.lobbyChatClient = lobbyClient.getHttpLobbyClient().getLobbyChatClient();
+    this.lobbyChatListener = lobbyClient.getHttpLobbyClient().getLobbyChatListener();
   }
 
   @Override
   public void setChatClient(final ChatClient chatClient) {
-    lobbyChatClient.setChatMessageListeners(
+    lobbyChatListener.setListeners(
         ChatMessageListeners.builder()
             .playerStatusListener(chatClient::statusUpdated)
             .playerLeftListener(chatClient::participantRemoved)

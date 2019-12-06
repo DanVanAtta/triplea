@@ -17,7 +17,7 @@ import org.triplea.domain.data.ApiKey;
 import org.triplea.domain.data.PlayerName;
 import org.triplea.http.client.lobby.chat.ChatMessageListeners;
 import org.triplea.http.client.lobby.chat.ChatParticipant;
-import org.triplea.http.client.lobby.chat.LobbyChatClient;
+import org.triplea.http.client.lobby.chat.LobbyChatSender;
 import org.triplea.http.client.lobby.chat.messages.server.ChatMessage;
 import org.triplea.http.client.lobby.chat.messages.server.ChatterList;
 import org.triplea.http.client.lobby.chat.messages.server.PlayerSlapped;
@@ -74,7 +74,7 @@ class LobbyChatIntegrationTest extends DropwizardTest {
   private List<PlayerSlapped> modPlayerSlappedEvents = new ArrayList<>();
   private List<ChatMessage> modMessageEvents = new ArrayList<>();
   private List<ChatterList> modConnectedEvents = new ArrayList<>();
-  private LobbyChatClient moderator;
+  private LobbyChatSender moderator;
 
   private List<StatusUpdate> chatterPlayerStatusEvents = new ArrayList<>();
   private List<PlayerName> chatterPlayerLeftEvents = new ArrayList<>();
@@ -82,12 +82,12 @@ class LobbyChatIntegrationTest extends DropwizardTest {
   private List<PlayerSlapped> chatterPlayerSlappedEvents = new ArrayList<>();
   private List<ChatMessage> chatterMessageEvents = new ArrayList<>();
   private List<ChatterList> chatterConnectedEvents = new ArrayList<>();
-  private LobbyChatClient chatter;
+  private LobbyChatSender chatter;
 
-  private LobbyChatClient createModerator() {
-    final LobbyChatClient moderator =
+  private LobbyChatSender createModerator() {
+    final LobbyChatSender moderator =
         // caution: api-key must match values in database (integration.yml)
-        new LobbyChatClient(localhost, MODERATOR_API_KEY);
+        new LobbyChatSender(localhost, MODERATOR_API_KEY);
 
     moderator.setChatMessageListeners(
         ChatMessageListeners.builder()
@@ -106,8 +106,8 @@ class LobbyChatIntegrationTest extends DropwizardTest {
     return moderator;
   }
 
-  private LobbyChatClient createChatter() {
-    final LobbyChatClient chatter = new LobbyChatClient(localhost, CHATTER_API_KEY);
+  private LobbyChatSender createChatter() {
+    final LobbyChatSender chatter = new LobbyChatSender(localhost, CHATTER_API_KEY);
 
     chatter.setChatMessageListeners(
         ChatMessageListeners.builder()

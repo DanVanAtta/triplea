@@ -26,7 +26,7 @@ import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.jdbi.v3.core.Jdbi;
 import org.triplea.http.client.AuthenticationHeaders;
-import org.triplea.http.client.lobby.chat.LobbyChatClient;
+import org.triplea.http.client.lobby.chat.LobbyChatSender;
 import org.triplea.http.client.remote.actions.RemoteActionsWebsocketListener;
 import org.triplea.lobby.server.db.JdbiDatabase;
 import org.triplea.lobby.server.db.dao.api.key.LobbyApiKeyDaoWrapper;
@@ -98,7 +98,7 @@ public class ServerApplication extends Application<AppConfig> {
     // socket configuration that can then be retrieved from a websocket session.
     chatSocketConfiguration =
         ServerEndpointConfig.Builder.create(
-                ChatWebsocket.class, LobbyChatClient.LOBBY_CHAT_WEBSOCKET_PATH)
+                ChatWebsocket.class, LobbyChatSender.LOBBY_CHAT_WEBSOCKET_PATH)
             .build();
 
     remoteActionsConfiguration =

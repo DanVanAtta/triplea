@@ -26,7 +26,7 @@ import org.triplea.http.client.web.socket.GenericWebSocketClient;
 import org.triplea.http.client.web.socket.messages.ClientMessageEnvelope;
 
 @ExtendWith(MockitoExtension.class)
-class LobbyChatClientTest {
+class LobbyChatSenderTest {
 
   private static final PlayerName PLAYER_NAME = PlayerName.of("player_name");
   private static final String MESSAGE = "message";
@@ -45,7 +45,7 @@ class LobbyChatClientTest {
 
   @Mock private GenericWebSocketClient webSocketClient;
   @Mock private ChatClientEnvelopeFactory clientEventFactory;
-  private LobbyChatClient lobbyChatClient;
+  private LobbyChatSender lobbyChatClient;
 
   @Mock private ClientMessageEnvelope clientEnvelope;
   @Mock private Consumer<StatusUpdate> playerStatusListener;
@@ -59,7 +59,7 @@ class LobbyChatClientTest {
 
   @BeforeEach
   void setup() {
-    lobbyChatClient = new LobbyChatClient(webSocketClient, clientEventFactory);
+    lobbyChatClient = new LobbyChatSender(webSocketClient, clientEventFactory);
     lobbyChatClient.setChatMessageListeners(
         ChatMessageListeners.builder()
             .connectedListener(connectedListener)

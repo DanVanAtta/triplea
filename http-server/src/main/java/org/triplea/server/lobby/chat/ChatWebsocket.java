@@ -8,7 +8,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
-import org.triplea.http.client.lobby.chat.LobbyChatClient;
+import org.triplea.http.client.lobby.chat.LobbyChatSender;
 
 /**
  * Handles chat connections. Largely delegates to {@see MessagingService}. A shared {@code
@@ -16,7 +16,7 @@ import org.triplea.http.client.lobby.chat.LobbyChatClient;
  * objects.
  */
 @Slf4j
-@ServerEndpoint(LobbyChatClient.LOBBY_CHAT_WEBSOCKET_PATH)
+@ServerEndpoint(LobbyChatSender.LOBBY_CHAT_WEBSOCKET_PATH)
 public class ChatWebsocket {
   public static final String MESSAGING_SERVICE_KEY = "messaging_service";
 

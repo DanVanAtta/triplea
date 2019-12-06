@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Interface represneting a websocket message type that knows how to extract a payload object from a
+ * Interface representing a websocket message type that knows how to extract a payload object from a
  * {@code ServerMessageEnvelope} and also knows how to send that payload to a parameter listener.
  *
  * @param <T> Parameterized listener class type. The class is expected to be a data object

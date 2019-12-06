@@ -1,8 +1,10 @@
 package org.triplea.http.client.web.socket;
 
+import com.google.common.base.Preconditions;
 import java.net.URI;
 import java.util.Optional;
 import java.util.function.Consumer;
+import lombok.Setter;
 import org.triplea.http.client.web.socket.messages.ServerMessageEnvelope;
 import org.triplea.http.client.web.socket.messages.WebsocketMessageType;
 
@@ -10,7 +12,8 @@ import org.triplea.http.client.web.socket.messages.WebsocketMessageType;
 public abstract class WebsocketListener<
         MessageTypeT extends WebsocketMessageType<ListenersTypeT>, ListenersTypeT>
     implements Consumer<ServerMessageEnvelope> {
-  private GenericWebSocketClient webSocketClient;
+  private final GenericWebSocketClient webSocketClient;
+  @Setter
   private ListenersTypeT listeners;
 
   protected WebsocketListener(
@@ -22,12 +25,18 @@ public abstract class WebsocketListener<
     this.listeners = listeners;
   }
 
+  protected WebsocketListener(
+      final URI hostUri, final String websocketPath) {
+    this(hostUri, websocketPath, null);
+  }
+
   public void close() {
     webSocketClient.close();
   }
 
   @Override
   public void accept(final ServerMessageEnvelope serverMessageEnvelope) {
+    Preconditions.checkState(listeners != null);
     readMessageTypeValue(serverMessageEnvelope)
         .ifPresent(
             messageType -> messageType.sendPayloadToListener(serverMessageEnvelope, listeners));
