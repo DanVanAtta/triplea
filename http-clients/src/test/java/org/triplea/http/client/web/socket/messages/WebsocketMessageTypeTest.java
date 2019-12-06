@@ -1,6 +1,9 @@
 package org.triplea.http.client.web.socket.messages;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -19,19 +22,20 @@ class WebsocketMessageTypeTest {
   @Getter
   @AllArgsConstructor
   private static class ExampleMessageListeners {
-    @Nonnull Consumer<String> listener;
+    @Nonnull Consumer<Integer> listener;
   }
 
   @AllArgsConstructor
   @Getter(onMethod_ = @Override)
+  @SuppressWarnings("ImmutableEnumChecker")
   private enum ExampleMessageType implements WebsocketMessageType<ExampleMessageListeners> {
-    MESSAGE_TYPE(String.class, ExampleMessageListeners::getListener);
+    MESSAGE_TYPE(Integer.class, ExampleMessageListeners::getListener);
 
     private final Class<?> classType;
     private final Function<ExampleMessageListeners, Consumer<?>> listenerMethod;
   }
 
-  @Mock private Consumer<String> listenerImplementation;
+  @Mock private Consumer<Integer> listenerImplementation;
 
   private ExampleMessageListeners exampleMessageListeners;
 
@@ -45,22 +49,25 @@ class WebsocketMessageTypeTest {
       "Verify that the message payload is extracted and sent to the listener implementation")
   void routeMessageToListener() {
     final ServerMessageEnvelope serverMessageEnvelope =
-        ServerMessageEnvelope.packageMessage(ExampleMessageType.MESSAGE_TYPE.toString(), "payload");
+        ServerMessageEnvelope.packageMessage(ExampleMessageType.MESSAGE_TYPE.toString(), 3210123);
 
     ExampleMessageType.MESSAGE_TYPE.sendPayloadToListener(
         serverMessageEnvelope, exampleMessageListeners);
 
-    verify(listenerImplementation).accept("payload");
+    verify(listenerImplementation).accept(3210123);
   }
 
   @Test
   void badMessageTypeThrows() {
     final ServerMessageEnvelope serverMessageEnvelope =
-        ServerMessageEnvelope.packageMessage("wrong type", "payload");
+        ServerMessageEnvelope.packageMessage("wrong type", 3210123);
 
-    ExampleMessageType.MESSAGE_TYPE.sendPayloadToListener(
-        serverMessageEnvelope, exampleMessageListeners);
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            ExampleMessageType.MESSAGE_TYPE.sendPayloadToListener(
+                serverMessageEnvelope, exampleMessageListeners));
 
-    verify(listenerImplementation).accept("payload");
+    verify(listenerImplementation, never()).accept(any());
   }
 }

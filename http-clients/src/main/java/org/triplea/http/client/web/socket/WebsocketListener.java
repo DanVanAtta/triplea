@@ -8,13 +8,35 @@ import lombok.Setter;
 import org.triplea.http.client.web.socket.messages.ServerMessageEnvelope;
 import org.triplea.http.client.web.socket.messages.WebsocketMessageType;
 
-/** Uber-generic websocket listener! Just pass it the right listeners. */
+/**
+ * Used to route server websocket messages to a listener.
+ *
+ * <p>Caution: Do not forget to call the {@code close} method when done listening!
+ *
+ * <p>Very-generic websocket listener! Knows about a set of listeners and message types. The message
+ * types know how to extract a specific message from a server message payload and to send that
+ * message to a listener from the set of listeners. This class wires those together, the net effect
+ * is that after construction a websocket connection is created and when messages are received they
+ * will be routed to the correct listener.
+ *
+ * @param <MessageTypeT> Websocket message type enum.
+ * @param <ListenersTypeT> Listener class, holds a set of consumers, each is an individual consumer.
+ */
 public abstract class WebsocketListener<
         MessageTypeT extends WebsocketMessageType<ListenersTypeT>, ListenersTypeT>
     implements Consumer<ServerMessageEnvelope> {
   private final GenericWebSocketClient webSocketClient;
   @Setter private ListenersTypeT listeners;
 
+  /**
+   * Constructs a websocket listener that will be connected and messages will be routed to the
+   * listeners passed in.
+   *
+   * @param hostUri Server host (base) uri.
+   * @param websocketPath Path on the server to the websocket to which we will listen.
+   * @param listeners Listener object that contains listeners for each message type we would expect
+   *     to receive from server.
+   */
   protected WebsocketListener(
       final URI hostUri, final String websocketPath, final ListenersTypeT listeners) {
     final URI websocketUri = URI.create(hostUri + websocketPath);
@@ -40,6 +62,10 @@ public abstract class WebsocketListener<
             messageType -> messageType.sendPayloadToListener(serverMessageEnvelope, listeners));
   }
 
+  /**
+   * Method to extract message type from a server message envelope. This will likey be a simple
+   * {@code enum.valueOf(serverMessageEnvelope.getMessageType()}.
+   */
   protected abstract MessageTypeT readMessageType(ServerMessageEnvelope serverMessageEnvelope);
 
   private Optional<MessageTypeT> readMessageTypeValue(

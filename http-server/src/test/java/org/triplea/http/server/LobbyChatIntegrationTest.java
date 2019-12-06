@@ -17,6 +17,7 @@ import org.triplea.domain.data.ApiKey;
 import org.triplea.domain.data.PlayerName;
 import org.triplea.http.client.lobby.chat.ChatMessageListeners;
 import org.triplea.http.client.lobby.chat.ChatParticipant;
+import org.triplea.http.client.lobby.chat.LobbyChatListener;
 import org.triplea.http.client.lobby.chat.LobbyChatSender;
 import org.triplea.http.client.lobby.chat.messages.server.ChatMessage;
 import org.triplea.http.client.lobby.chat.messages.server.ChatterList;
@@ -85,45 +86,42 @@ class LobbyChatIntegrationTest extends DropwizardTest {
   private LobbyChatSender chatter;
 
   private LobbyChatSender createModerator() {
-    final LobbyChatSender moderator =
-        // caution: api-key must match values in database (integration.yml)
-        new LobbyChatSender(localhost, MODERATOR_API_KEY);
-
-    moderator.setChatMessageListeners(
-        ChatMessageListeners.builder()
-            .playerStatusListener(modPlayerStatusEvents::add)
-            .playerLeftListener(modPlayerLeftEvents::add)
-            .playerJoinedListener(modPlayerJoinedEvents::add)
-            .playerSlappedListener(modPlayerSlappedEvents::add)
-            .chatMessageListener(modMessageEvents::add)
-            .connectedListener(modConnectedEvents::add)
-            .chatEventListener(msg -> {})
-            .serverErrorListener(
-                error -> {
-                  throw new RuntimeException(error);
-                })
-            .build());
-    return moderator;
+    new LobbyChatListener(localhost)
+        .setListeners(
+            ChatMessageListeners.builder()
+                .playerStatusListener(modPlayerStatusEvents::add)
+                .playerLeftListener(modPlayerLeftEvents::add)
+                .playerJoinedListener(modPlayerJoinedEvents::add)
+                .playerSlappedListener(modPlayerSlappedEvents::add)
+                .chatMessageListener(modMessageEvents::add)
+                .connectedListener(modConnectedEvents::add)
+                .chatEventListener(msg -> {})
+                .serverErrorListener(
+                    error -> {
+                      throw new RuntimeException(error);
+                    })
+                .build());
+    // caution: api-key must match values in database (integration.yml)
+    return new LobbyChatSender(localhost, MODERATOR_API_KEY);
   }
 
   private LobbyChatSender createChatter() {
-    final LobbyChatSender chatter = new LobbyChatSender(localhost, CHATTER_API_KEY);
-
-    chatter.setChatMessageListeners(
-        ChatMessageListeners.builder()
-            .playerStatusListener(chatterPlayerStatusEvents::add)
-            .playerLeftListener(chatterPlayerLeftEvents::add)
-            .playerJoinedListener(chatterPlayerJoinedEvents::add)
-            .playerSlappedListener(chatterPlayerSlappedEvents::add)
-            .chatMessageListener(chatterMessageEvents::add)
-            .connectedListener(chatterConnectedEvents::add)
-            .chatEventListener(msg -> {})
-            .serverErrorListener(
-                error -> {
-                  throw new RuntimeException(error);
-                })
-            .build());
-    return chatter;
+    new LobbyChatListener(localhost)
+        .setListeners(
+            ChatMessageListeners.builder()
+                .playerStatusListener(chatterPlayerStatusEvents::add)
+                .playerLeftListener(chatterPlayerLeftEvents::add)
+                .playerJoinedListener(chatterPlayerJoinedEvents::add)
+                .playerSlappedListener(chatterPlayerSlappedEvents::add)
+                .chatMessageListener(chatterMessageEvents::add)
+                .connectedListener(chatterConnectedEvents::add)
+                .chatEventListener(msg -> {})
+                .serverErrorListener(
+                    error -> {
+                      throw new RuntimeException(error);
+                    })
+                .build());
+    return new LobbyChatSender(localhost, CHATTER_API_KEY);
   }
 
   @Test
