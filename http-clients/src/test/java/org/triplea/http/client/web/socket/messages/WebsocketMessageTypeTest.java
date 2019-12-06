@@ -12,7 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,8 +31,7 @@ class WebsocketMessageTypeTest {
     private final Function<ExampleMessageListeners, Consumer<?>> listenerMethod;
   }
 
-  @Mock
-  private Consumer<String> listenerImplementation;
+  @Mock private Consumer<String> listenerImplementation;
 
   private ExampleMessageListeners exampleMessageListeners;
 
@@ -43,15 +41,16 @@ class WebsocketMessageTypeTest {
   }
 
   @Test
-  @DisplayName("Verify that the message payload is extracted and sent to the listener implementation")
+  @DisplayName(
+      "Verify that the message payload is extracted and sent to the listener implementation")
   void routeMessageToListener() {
     final ServerMessageEnvelope serverMessageEnvelope =
         ServerMessageEnvelope.packageMessage(ExampleMessageType.MESSAGE_TYPE.toString(), "payload");
 
-    ExampleMessageType.MESSAGE_TYPE.sendPayloadToListener(serverMessageEnvelope, exampleMessageListeners);
+    ExampleMessageType.MESSAGE_TYPE.sendPayloadToListener(
+        serverMessageEnvelope, exampleMessageListeners);
 
     verify(listenerImplementation).accept("payload");
-
   }
 
   @Test
@@ -59,11 +58,9 @@ class WebsocketMessageTypeTest {
     final ServerMessageEnvelope serverMessageEnvelope =
         ServerMessageEnvelope.packageMessage("wrong type", "payload");
 
-    ExampleMessageType.MESSAGE_TYPE.sendPayloadToListener(serverMessageEnvelope, exampleMessageListeners);
+    ExampleMessageType.MESSAGE_TYPE.sendPayloadToListener(
+        serverMessageEnvelope, exampleMessageListeners);
 
     verify(listenerImplementation).accept("payload");
-
   }
-
-
 }

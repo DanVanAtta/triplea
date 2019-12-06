@@ -287,8 +287,7 @@ public class ServerModel extends Observable implements IConnectionChangeListener
     Optional.ofNullable(chatController).ifPresent(ChatController::deactivate);
     Optional.ofNullable(messengers).ifPresent(Messengers::shutDown);
     Optional.ofNullable(chatModelCancel).ifPresent(Runnable::run);
-    Optional.ofNullable(remoteActionsListener)
-        .ifPresent(RemoteActionsWebsocketListener::close);
+    Optional.ofNullable(remoteActionsListener).ifPresent(RemoteActionsWebsocketListener::close);
   }
 
   public void setRemoteModelListener(final @Nullable IRemoteModelListener listener) {

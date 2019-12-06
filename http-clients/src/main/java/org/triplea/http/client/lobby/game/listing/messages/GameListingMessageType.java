@@ -11,8 +11,7 @@ import org.triplea.http.client.web.socket.messages.WebsocketMessageType;
 /** Represents the types of messages server can send to client for game listing updates. */
 @AllArgsConstructor
 @Getter(onMethod_ = @Override)
-public
-enum GameListingMessageType implements WebsocketMessageType<GameListingListeners> {
+public enum GameListingMessageType implements WebsocketMessageType<GameListingListeners> {
   GAME_ADDED(LobbyGameListing.class, GameListingListeners::getGameUpdatedListener),
   GAME_REMOVED(String.class, GameListingListeners::getGameRemovedListener);
 

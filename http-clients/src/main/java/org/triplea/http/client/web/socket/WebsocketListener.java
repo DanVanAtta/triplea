@@ -13,8 +13,7 @@ public abstract class WebsocketListener<
         MessageTypeT extends WebsocketMessageType<ListenersTypeT>, ListenersTypeT>
     implements Consumer<ServerMessageEnvelope> {
   private final GenericWebSocketClient webSocketClient;
-  @Setter
-  private ListenersTypeT listeners;
+  @Setter private ListenersTypeT listeners;
 
   protected WebsocketListener(
       final URI hostUri, final String websocketPath, final ListenersTypeT listeners) {
@@ -25,8 +24,7 @@ public abstract class WebsocketListener<
     this.listeners = listeners;
   }
 
-  protected WebsocketListener(
-      final URI hostUri, final String websocketPath) {
+  protected WebsocketListener(final URI hostUri, final String websocketPath) {
     this(hostUri, websocketPath, null);
   }
 
