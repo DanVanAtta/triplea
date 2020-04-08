@@ -17,7 +17,6 @@ import games.strategy.triplea.delegate.AbstractPlaceDelegate;
 import games.strategy.triplea.delegate.DiceRoll;
 import games.strategy.triplea.delegate.GameStepPropertiesHelper;
 import games.strategy.triplea.delegate.Matches;
-import games.strategy.triplea.delegate.PlaceDelegate;
 import games.strategy.triplea.delegate.data.BattleListing;
 import games.strategy.triplea.delegate.data.CasualtyDetails;
 import games.strategy.triplea.delegate.data.CasualtyList;
@@ -543,7 +542,7 @@ public abstract class TripleAPlayer extends AbstractHumanPlayer {
       throw new IllegalStateException(errorContext, e);
     }
 
-    highlightEligiblePlaceTerritories((AbstractPlaceDelegate) placeDel, ui.getMapPanel() );
+    highlightEligiblePlaceTerritories((AbstractPlaceDelegate) placeDel, ui.getMapPanel());
 
     while (true) {
       if (!soundPlayedAlreadyPlacement) {
@@ -573,12 +572,12 @@ public abstract class TripleAPlayer extends AbstractHumanPlayer {
 
   private void highlightEligiblePlaceTerritories(
       final AbstractPlaceDelegate placeDelegate, final MapPanel mapPanel) {
-    getGameData().getMap().getTerritories()
-        .stream()
+    getGameData().getMap().getTerritories().stream()
         .filter(t -> placeDelegate.canProduce(t, this.getGamePlayer()))
-        .forEach(t -> {
-          mapPanel.setTerritoryOverlay(t, Color.WHITE);
-        });
+        .forEach(
+            t -> {
+              mapPanel.setTerritoryOverlay(t, Color.WHITE);
+            });
   }
 
   private void endTurn() {
