@@ -926,11 +926,11 @@ public class MapPanel extends ImageScrollerLargeView {
     g.dispose();
   }
 
-  public void setTerritoryOverlay(final Territory territory, final Color color, final int alpha) {
-    tileManager.setTerritoryOverlay(territory, color, alpha, gameData, uiContext.getMapData());
+  public void setTerritoryOverlay(final Territory territory, final Color color) {
+    tileManager.setTerritoryOverlay(territory, color, 200, gameData, uiContext.getMapData());
   }
 
-  void setTerritoryOverlayForBorder(final Territory territory, final Color color) {
+  public void setTerritoryOverlayForBorder(final Territory territory, final Color color) {
     tileManager.setTerritoryOverlayForBorder(territory, color, gameData, uiContext.getMapData());
   }
 

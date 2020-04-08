@@ -8,6 +8,7 @@ import games.strategy.engine.data.Territory;
 import games.strategy.engine.data.Unit;
 import games.strategy.engine.data.UnitType;
 import games.strategy.engine.data.changefactory.ChangeFactory;
+import games.strategy.engine.data.properties.MapProperty;
 import games.strategy.engine.message.IRemote;
 import games.strategy.triplea.Constants;
 import games.strategy.triplea.Properties;
@@ -20,6 +21,7 @@ import games.strategy.triplea.delegate.battle.BattleTracker;
 import games.strategy.triplea.delegate.data.PlaceableUnits;
 import games.strategy.triplea.delegate.remote.IAbstractPlaceDelegate;
 import games.strategy.triplea.formatter.MyFormatter;
+import games.strategy.triplea.ui.panels.map.MapPanel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -723,18 +725,24 @@ public abstract class AbstractPlaceDelegate extends BaseTripleADelegate
     return "No Factory in " + producer.getName();
   }
 
-  /**
-   * Returns the territories that would do the producing if units are to be placed in a given
-   * territory. Returns an empty list if no suitable territory could be found.
-   *
-   * @param to - Territory to place in.
-   * @param player - player that is placing.
-   * @param unitsToPlace - Can be null, otherwise is the units that will be produced.
-   * @param simpleCheck If true you return true even if a factory is not present. Used when you do
-   *     not want an infinite loop (getAllProducers -> canProduce ->
-   *     howManyOfEachConstructionCanPlace -> getAllProducers -> etc)
-   * @return - List of territories that can produce here.
-   */
+  public boolean canProduce(
+      final Territory territory,
+      final GamePlayer player) {
+    return !getAllProducers(territory, player, List.of(), true).isEmpty();
+  }
+
+    /**
+     * Returns the territories that would do the producing if units are to be placed in a given
+     * territory. Returns an empty list if no suitable territory could be found.
+     *
+     * @param to - Territory to place in.
+     * @param player - player that is placing.
+     * @param unitsToPlace - Can be null, otherwise is the units that will be produced.
+     * @param simpleCheck If true you return true even if a factory is not present. Used when you do
+     *     not want an infinite loop (getAllProducers -> canProduce ->
+     *     howManyOfEachConstructionCanPlace -> getAllProducers -> etc)
+     * @return - List of territories that can produce here.
+     */
   private List<Territory> getAllProducers(
       final Territory to,
       final GamePlayer player,
@@ -759,7 +767,7 @@ public abstract class AbstractPlaceDelegate extends BaseTripleADelegate
     return producers;
   }
 
-  protected List<Territory> getAllProducers(
+  public List<Territory> getAllProducers(
       final Territory to, final GamePlayer player, final Collection<Unit> unitsToPlace) {
     return getAllProducers(to, player, unitsToPlace, false);
   }

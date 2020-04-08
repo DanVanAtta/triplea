@@ -72,7 +72,7 @@ public class BidPlaceDelegate extends AbstractPlaceDelegate {
   }
 
   @Override
-  protected List<Territory> getAllProducers(
+  public List<Territory> getAllProducers(
       final Territory to, final GamePlayer player, final Collection<Unit> unitsToPlace) {
     final List<Territory> producers = new ArrayList<>();
     producers.add(to);

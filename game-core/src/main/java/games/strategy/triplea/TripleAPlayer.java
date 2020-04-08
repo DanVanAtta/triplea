@@ -13,9 +13,11 @@ import games.strategy.triplea.attachments.PlayerAttachment;
 import games.strategy.triplea.attachments.PoliticalActionAttachment;
 import games.strategy.triplea.attachments.TerritoryAttachment;
 import games.strategy.triplea.attachments.UserActionAttachment;
+import games.strategy.triplea.delegate.AbstractPlaceDelegate;
 import games.strategy.triplea.delegate.DiceRoll;
 import games.strategy.triplea.delegate.GameStepPropertiesHelper;
 import games.strategy.triplea.delegate.Matches;
+import games.strategy.triplea.delegate.PlaceDelegate;
 import games.strategy.triplea.delegate.data.BattleListing;
 import games.strategy.triplea.delegate.data.CasualtyDetails;
 import games.strategy.triplea.delegate.data.CasualtyList;
@@ -35,6 +37,8 @@ import games.strategy.triplea.formatter.MyFormatter;
 import games.strategy.triplea.player.AbstractHumanPlayer;
 import games.strategy.triplea.settings.ClientSetting;
 import games.strategy.triplea.ui.PlaceData;
+import games.strategy.triplea.ui.panels.map.MapPanel;
+import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -538,6 +542,9 @@ public abstract class TripleAPlayer extends AbstractHumanPlayer {
       log.log(Level.SEVERE, errorContext, e);
       throw new IllegalStateException(errorContext, e);
     }
+
+    highlightEligiblePlaceTerritories((AbstractPlaceDelegate) placeDel, ui.getMapPanel() );
+
     while (true) {
       if (!soundPlayedAlreadyPlacement) {
         ClipPlayer.play(SoundPath.CLIP_PHASE_PLACEMENT, gamePlayer);
@@ -562,6 +569,16 @@ public abstract class TripleAPlayer extends AbstractHumanPlayer {
         ui.notifyError(error);
       }
     }
+  }
+
+  private void highlightEligiblePlaceTerritories(
+      final AbstractPlaceDelegate placeDelegate, final MapPanel mapPanel) {
+    getGameData().getMap().getTerritories()
+        .stream()
+        .filter(t -> placeDelegate.canProduce(t, this.getGamePlayer()))
+        .forEach(t -> {
+          mapPanel.setTerritoryOverlay(t, Color.WHITE);
+        });
   }
 
   private void endTurn() {

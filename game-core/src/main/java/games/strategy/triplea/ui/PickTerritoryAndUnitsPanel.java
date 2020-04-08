@@ -122,9 +122,9 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
                 }
                 currentHighlightedTerritory = territory;
                 if (territoryChoices.contains(currentHighlightedTerritory)) {
-                  getMap().setTerritoryOverlay(currentHighlightedTerritory, Color.WHITE, 200);
+                  getMap().setTerritoryOverlay(currentHighlightedTerritory, Color.WHITE);
                 } else {
-                  getMap().setTerritoryOverlay(currentHighlightedTerritory, Color.RED, 200);
+                  getMap().setTerritoryOverlay(currentHighlightedTerritory, Color.RED);
                 }
                 getMap().repaint();
               }
@@ -247,7 +247,7 @@ public class PickTerritoryAndUnitsPanel extends ActionPanel {
     if (territoryChoices.size() == 1) {
       pickedTerritory = territoryChoices.get(0);
       currentHighlightedTerritory = pickedTerritory;
-      getMap().setTerritoryOverlay(currentHighlightedTerritory, Color.WHITE, 200);
+      getMap().setTerritoryOverlay(currentHighlightedTerritory, Color.WHITE);
     }
     SwingUtilities.invokeLater(
         () -> {

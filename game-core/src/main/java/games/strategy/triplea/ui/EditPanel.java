@@ -321,7 +321,7 @@ class EditPanel extends ActionPanel {
                   getMap().clearTerritoryOverlay(currentTerritory);
                 }
                 currentTerritory = territory;
-                getMap().setTerritoryOverlay(currentTerritory, Color.WHITE, 200);
+                getMap().setTerritoryOverlay(currentTerritory, Color.WHITE);
                 getMap().repaint();
               }
             }
