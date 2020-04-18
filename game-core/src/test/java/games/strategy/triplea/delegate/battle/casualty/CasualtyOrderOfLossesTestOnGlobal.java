@@ -297,19 +297,15 @@ class CasualtyOrderOfLossesTestOnGlobal {
   }
 
   private void givenHeavyBombers() {
-    addTech(new HeavyBomberAdvance(data));
-  }
-
-  private void addTech(final TechAdvance techAdvance) {
+    final var heavyBomberAdvance = new HeavyBomberAdvance(data);
     final var change =
         ChangeFactory.attachmentPropertyChange(
-            TechAttachment.get(BRITISH), true, techAdvance.getProperty());
+            TechAttachment.get(BRITISH), true, heavyBomberAdvance.getProperty());
     data.performChange(change);
   }
 
   @Test
-  @DisplayName(
-      "bomber has an equal attack power as bship, select bomber first as it is less expensive")
+  @DisplayName("bomber has an equal attack power as bship, select bomber first as it is less expensive")
   void bomberAndBattleship() {
     final Collection<Unit> attackingUnits = new ArrayList<>();
     attackingUnits.addAll(DataFactory.britishBomber(1));
