@@ -37,8 +37,23 @@ class CasualtyOrderOfLossesTestOnGlobal {
   private static final UnitType MARINE = checkNotNull(data.getUnitTypeList().getUnitType("marine"));
   private static final UnitType ARTILLERY =
       checkNotNull(data.getUnitTypeList().getUnitType("artillery"));
+  private static final UnitType SUBMARINE =
+      checkNotNull(data.getUnitTypeList().getUnitType("submarine"));
+  private static final UnitType DESTROYER =
+      checkNotNull(data.getUnitTypeList().getUnitType("destroyer"));
+  private static final UnitType CARRIER =
+      checkNotNull(data.getUnitTypeList().getUnitType("carrier"));
+
   private static final IntegerMap<UnitType> COST_MAP =
-      IntegerMap.of(Map.of(INFANTRY, 3, TANK, 5, MARINE, 4, ARTILLERY, 4));
+      IntegerMap.of(
+          Map.of(
+              INFANTRY, 3,
+              TANK, 5,
+              MARINE, 4,
+              ARTILLERY, 4,
+              SUBMARINE, 6,
+              DESTROYER, 8,
+              CARRIER, 16));
 
   @UtilityClass
   static class DataFactory {
@@ -56,6 +71,18 @@ class CasualtyOrderOfLossesTestOnGlobal {
 
     static Collection<Unit> britishArtillery(final int count) {
       return createUnit(ARTILLERY, count);
+    }
+
+    static Collection<Unit> britishCarrier(final int count) {
+      return createUnit(CARRIER, count);
+    }
+
+    static Collection<Unit> britishDestroyer(final int count) {
+      return createUnit(DESTROYER, count);
+    }
+
+    static Collection<Unit> britishSubmarine(final int count) {
+      return createUnit(SUBMARINE, count);
     }
 
     private static Collection<Unit> createUnit(final UnitType unitType, final int count) {
@@ -180,5 +207,52 @@ class CasualtyOrderOfLossesTestOnGlobal {
     assertThat(result.get(3).getType(), is(ARTILLERY));
     assertThat(result.get(4).getType(), is(ARTILLERY));
     assertThat(result.get(5).getType(), is(ARTILLERY));
+  }
+
+  @Test
+  void navalOrderingOnAttack() {
+    final Collection<Unit> attackingUnits = new ArrayList<>();
+    attackingUnits.addAll(DataFactory.britishSubmarine(1));
+    attackingUnits.addAll(DataFactory.britishDestroyer(1));
+    attackingUnits.addAll(DataFactory.britishCarrier(1));
+
+    final List<Unit> result =
+        CasualtyOrderOfLosses.sortUnitsForCasualtiesWithSupport(attackingWith(attackingUnits));
+
+    assertThat(result, hasSize(3));
+    assertThat(result.get(0).getType(), is(CARRIER));
+    assertThat(result.get(1).getType(), is(SUBMARINE));
+    assertThat(result.get(2).getType(), is(DESTROYER));
+  }
+
+  @Test
+  void navalOrderingOnDefense() {
+    final Collection<Unit> attackingUnits = new ArrayList<>();
+    attackingUnits.addAll(DataFactory.britishSubmarine(1));
+    attackingUnits.addAll(DataFactory.britishDestroyer(1));
+    attackingUnits.addAll(DataFactory.britishCarrier(1));
+
+    final List<Unit> result =
+        CasualtyOrderOfLosses.sortUnitsForCasualtiesWithSupport(defendingWith(attackingUnits));
+
+    assertThat(result, hasSize(3));
+    assertThat(result.get(0).getType(), is(SUBMARINE));
+    assertThat(result.get(1).getType(), is(DESTROYER));
+    assertThat(result.get(2).getType(), is(CARRIER));
+  }
+
+  private CasualtyOrderOfLosses.Parameters defendingWith(final Collection<Unit> units) {
+    return CasualtyOrderOfLosses.Parameters.builder()
+        .targetsToPickFrom(units)
+        .defending(true)
+        .player(BRITISH)
+        .enemyUnits(List.of()) // << TODO: remove this parameter should not matter
+        .amphibious(false)
+        .amphibiousLandAttackers(List.of())
+        .battlesite(FRANCE)
+        .costs(COST_MAP)
+        .territoryEffects(List.of())
+        .data(data)
+        .build();
   }
 }
