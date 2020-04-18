@@ -8,7 +8,6 @@ import static org.hamcrest.core.Is.is;
 
 import games.strategy.engine.data.GameData;
 import games.strategy.engine.data.GamePlayer;
-import games.strategy.engine.data.TechnologyFrontier;
 import games.strategy.engine.data.Territory;
 import games.strategy.engine.data.Unit;
 import games.strategy.engine.data.UnitType;
@@ -24,6 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.experimental.UtilityClass;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -48,8 +48,7 @@ class CasualtyOrderOfLossesTestOnGlobal {
       checkNotNull(data.getUnitTypeList().getUnitType("destroyer"));
   private static final UnitType CARRIER =
       checkNotNull(data.getUnitTypeList().getUnitType("carrier"));
-  private static final UnitType BOMBER =
-      checkNotNull(data.getUnitTypeList().getUnitType("bomber"));
+  private static final UnitType BOMBER = checkNotNull(data.getUnitTypeList().getUnitType("bomber"));
   private static final UnitType BATTLESHIP =
       checkNotNull(data.getUnitTypeList().getUnitType("battleship"));
 
@@ -64,8 +63,7 @@ class CasualtyOrderOfLossesTestOnGlobal {
               DESTROYER, 8,
               CARRIER, 16,
               BOMBER, 12,
-              BATTLESHIP, 20
-          ));
+              BATTLESHIP, 20));
 
   @UtilityClass
   static class DataFactory {
@@ -110,6 +108,11 @@ class CasualtyOrderOfLossesTestOnGlobal {
           .mapToObj(i -> new Unit(unitType, BRITISH, data))
           .collect(Collectors.toSet());
     }
+  }
+
+  @BeforeEach
+  void clearCache() {
+    CasualtyOrderOfLosses.clearOolCache();
   }
 
   @ParameterizedTest
@@ -211,8 +214,7 @@ class CasualtyOrderOfLossesTestOnGlobal {
   }
 
   @Test
-  @DisplayName("Verify that amphib assualting marines and artillery are interleaved")
-  void interleaveArtilleryAndMarines() {
+  void marinesAndArtillery() {
     final Collection<Unit> attackingUnits = new ArrayList<>();
     attackingUnits.addAll(DataFactory.britishMarine(3));
     attackingUnits.addAll(DataFactory.britishArtillery(3));
@@ -302,7 +304,8 @@ class CasualtyOrderOfLossesTestOnGlobal {
   }
 
   @Test
-  @DisplayName("bomber has an equal attack power as bship, select bomber first as it is less expensive")
+  @DisplayName(
+      "bomber has an equal attack power as bship, select bomber first as it is less expensive")
   void bomberAndBattleship() {
     final Collection<Unit> attackingUnits = new ArrayList<>();
     attackingUnits.addAll(DataFactory.britishBomber(1));
