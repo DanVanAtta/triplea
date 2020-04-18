@@ -88,7 +88,7 @@ class CasualtyOrderOfLossesTestOnBigWorldV3 {
     assertThat(result.get(0).getType(), is(TANK));
     assertThat(result.get(1).getType(), is(MARINE));
     assertThat(result.get(2).getType(), is(MARINE));
-    assertThat(result.get(3).getType(), is(ARTILLERY)); // << bug we should pick the artillyer first
+    assertThat(result.get(3).getType(), is(ARTILLERY)); // << bug we should pick the artillery first
   }
 
   private void addTech(final TechAdvance techAdvance) {
@@ -111,5 +111,23 @@ class CasualtyOrderOfLossesTestOnBigWorldV3 {
         .territoryEffects(List.of())
         .data(data)
         .build();
+  }
+
+  @Test
+  void amphibAssaultWithoutImprovedArtillery() {
+    final Collection<Unit> attackingUnits = new ArrayList<>();
+    attackingUnits.addAll(DataFactory.britishTank(1));
+    attackingUnits.addAll(DataFactory.britishArtillery(1));
+    attackingUnits.addAll(DataFactory.britishMarine(1));
+    attackingUnits.addAll(DataFactory.britishMarine(1));
+
+    final List<Unit> result =
+        CasualtyOrderOfLosses.sortUnitsForCasualtiesWithSupport(amphibAssault(attackingUnits));
+
+    assertThat(result, hasSize(4));
+    assertThat(result.get(0).getType(), is(TANK)); // << bug, should be marine or artillery first
+    assertThat(result.get(1).getType(), is(MARINE)); // << bug should be artillery
+    assertThat(result.get(2).getType(), is(MARINE));
+    assertThat(result.get(3).getType(), is(ARTILLERY)); // << bug, should be tank
   }
 }
