@@ -14,6 +14,10 @@ import games.strategy.engine.data.UnitType;
 import games.strategy.engine.data.changefactory.ChangeFactory;
 import games.strategy.triplea.attachments.TechAttachment;
 import games.strategy.triplea.delegate.HeavyBomberAdvance;
+<<<<<<< HEAD
+=======
+import games.strategy.triplea.delegate.ImprovedArtillerySupportAdvance;
+>>>>>>> Improve tests further, big world v3 shows a few bad casualty selections
 import games.strategy.triplea.delegate.TechAdvance;
 import games.strategy.triplea.xml.TestMapGameData;
 import java.util.ArrayList;
@@ -296,10 +300,13 @@ class CasualtyOrderOfLossesTestOnGlobal {
   }
 
   private void givenHeavyBombers() {
-    final var heavyBomberAdvance = new HeavyBomberAdvance(data);
+    addTech(new HeavyBomberAdvance(data));
+  }
+
+  private void addTech(final TechAdvance techAdvance) {
     final var change =
         ChangeFactory.attachmentPropertyChange(
-            TechAttachment.get(BRITISH), true, heavyBomberAdvance.getProperty());
+            TechAttachment.get(BRITISH), true, techAdvance.getProperty());
     data.performChange(change);
   }
 
@@ -317,5 +324,25 @@ class CasualtyOrderOfLossesTestOnGlobal {
     assertThat(result, hasSize(2));
     assertThat(result.get(0).getType(), is(BOMBER));
     assertThat(result.get(1).getType(), is(BATTLESHIP));
+  }
+
+  @Test
+  void improvedArtillery() {
+    addTech(new ImprovedArtillerySupportAdvance(data));
+
+    final Collection<Unit> attackingUnits = new ArrayList<>();
+    attackingUnits.addAll(DataFactory.britishTank(1));
+    attackingUnits.addAll(DataFactory.britishArtillery(1));
+    attackingUnits.addAll(DataFactory.britishMarine(1));
+    attackingUnits.addAll(DataFactory.britishMarine(1));
+
+    final List<Unit> result =
+        CasualtyOrderOfLosses.sortUnitsForCasualtiesWithSupport(amphibAssault(attackingUnits));
+
+    assertThat(result, hasSize(4));
+    assertThat(result.get(0).getType(), is(MARINE)); // attack at 4
+    assertThat(result.get(1).getType(), is(MARINE)); // attack at 4
+    assertThat(result.get(2).getType(), is(ARTILLERY)); // attack at 2 (providing +1, + 1);
+    assertThat(result.get(3).getType(), is(TANK)); // attack at 3
   }
 }
