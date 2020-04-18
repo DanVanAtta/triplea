@@ -214,8 +214,7 @@ class CasualtyOrderOfLossesTestOnGlobal {
   }
 
   @Test
-  @DisplayName("Verify that amphib assualting marines and artillery are interleaved")
-  void interleaveArtilleryAndMarines() {
+  void marinesAndArtillery() {
     final Collection<Unit> attackingUnits = new ArrayList<>();
     attackingUnits.addAll(DataFactory.britishMarine(3));
     attackingUnits.addAll(DataFactory.britishArtillery(3));
@@ -305,7 +304,8 @@ class CasualtyOrderOfLossesTestOnGlobal {
   }
 
   @Test
-  @DisplayName("bomber has an equal attack power as bship, select bomber first as it is less expensive")
+  @DisplayName(
+      "bomber has an equal attack power as bship, select bomber first as it is less expensive")
   void bomberAndBattleship() {
     final Collection<Unit> attackingUnits = new ArrayList<>();
     attackingUnits.addAll(DataFactory.britishBomber(1));
