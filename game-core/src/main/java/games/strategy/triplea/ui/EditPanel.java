@@ -697,8 +697,7 @@ class EditPanel extends ActionPanel {
                         TuvUtils.getCostsForTuv(player, getData()),
                         null,
                         getData(),
-                        true,
-                        false)
+                        true)
                     .reversed());
             // unit mapped to <max, min, current>
             final Map<Unit, Triple<Integer, Integer, Integer>> currentDamageMap = new HashMap<>();
@@ -776,8 +775,7 @@ class EditPanel extends ActionPanel {
                         TuvUtils.getCostsForTuv(player, getData()),
                         null,
                         getData(),
-                        true,
-                        false)
+                        true)
                     .reversed());
             // unit mapped to <max, min, current>
             final Map<Unit, Triple<Integer, Integer, Integer>> currentDamageMap = new HashMap<>();

@@ -132,14 +132,17 @@ class CasualtyOrderOfLossesTestOnGlobal {
   private CasualtyOrderOfLosses.Parameters attackingWith(final Collection<Unit> units) {
     return CasualtyOrderOfLosses.Parameters.builder()
         .targetsToPickFrom(units)
-        .defending(false)
         .player(BRITISH)
         .enemyUnits(List.of()) // << TODO: remove this parameter should not matter
-        .amphibious(false)
+        .combatModifiers(
+            UnitType.CombatModifiers.builder()
+                .defending(false)
+                .amphibious(false)
+                .territoryEffects(List.of())
+                .build())
         .amphibiousLandAttackers(List.of())
         .battlesite(FRANCE)
         .costs(COST_MAP)
-        .territoryEffects(List.of())
         .data(data)
         .build();
   }
@@ -175,7 +178,7 @@ class CasualtyOrderOfLossesTestOnGlobal {
     assertThat(result, hasSize(4));
 
     // Note: It's a bug we take marine first, artillery can support the marine instead
-    // of infantry, would be better to kill infantry first as it is lower cost
+    // of infantry, would be better to kill infantry first
     assertThat(result.get(0).getType(), is(MARINE));
     assertThat(result.get(1).getType(), is(INFANTRY));
     assertThat(result.get(2).getType(), is(ARTILLERY));
@@ -205,14 +208,17 @@ class CasualtyOrderOfLossesTestOnGlobal {
   private CasualtyOrderOfLosses.Parameters amphibAssault(final Collection<Unit> amphibUnits) {
     return CasualtyOrderOfLosses.Parameters.builder()
         .targetsToPickFrom(amphibUnits)
-        .defending(false)
         .player(BRITISH)
         .enemyUnits(List.of()) // << TODO: remove this parameter should not matter
-        .amphibious(true)
+        .combatModifiers(
+            UnitType.CombatModifiers.builder()
+                .defending(false)
+                .amphibious(true)
+                .territoryEffects(List.of())
+                .build())
         .amphibiousLandAttackers(amphibUnits)
         .battlesite(FRANCE)
         .costs(COST_MAP)
-        .territoryEffects(List.of())
         .data(data)
         .build();
   }
@@ -270,14 +276,17 @@ class CasualtyOrderOfLossesTestOnGlobal {
   private CasualtyOrderOfLosses.Parameters defendingWith(final Collection<Unit> units) {
     return CasualtyOrderOfLosses.Parameters.builder()
         .targetsToPickFrom(units)
-        .defending(true)
         .player(BRITISH)
         .enemyUnits(List.of()) // << TODO: remove this parameter should not matter
-        .amphibious(false)
+        .combatModifiers(
+            UnitType.CombatModifiers.builder()
+                .defending(true)
+                .amphibious(false)
+                .territoryEffects(List.of())
+                .build())
         .amphibiousLandAttackers(List.of())
         .battlesite(FRANCE)
         .costs(COST_MAP)
-        .territoryEffects(List.of())
         .data(data)
         .build();
   }

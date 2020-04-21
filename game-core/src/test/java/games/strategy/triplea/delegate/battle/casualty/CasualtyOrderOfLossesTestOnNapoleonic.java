@@ -89,14 +89,17 @@ class CasualtyOrderOfLossesTestOnNapoleonic {
   private CasualtyOrderOfLosses.Parameters attackingWith(final Collection<Unit> units) {
     return CasualtyOrderOfLosses.Parameters.builder()
         .targetsToPickFrom(units)
-        .defending(false)
         .player(BRITISH)
         .enemyUnits(List.of()) // << TODO: remove this parameter should not matter
-        .amphibious(false)
         .amphibiousLandAttackers(List.of())
+        .combatModifiers(
+            UnitType.CombatModifiers.builder()
+                .defending(false)
+                .amphibious(false)
+                .territoryEffects(List.of())
+                .build())
         .battlesite(NORMANDY)
         .costs(COST_MAP)
-        .territoryEffects(List.of())
         .data(data)
         .build();
   }

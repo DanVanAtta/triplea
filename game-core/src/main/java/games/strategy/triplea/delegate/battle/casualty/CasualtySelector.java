@@ -324,15 +324,18 @@ public class CasualtySelector {
         CasualtyOrderOfLosses.sortUnitsForCasualtiesWithSupport(
             CasualtyOrderOfLosses.Parameters.builder()
                 .targetsToPickFrom(targetsToPickFrom)
-                .defending(defending)
                 .player(player)
                 .enemyUnits(enemyUnits)
-                .amphibious(amphibious)
+                .combatModifiers(
+                    UnitType.CombatModifiers.builder()
+                        .territoryEffects(territoryEffects)
+                        .amphibious(amphibious)
+                        .defending(defending)
+                        .build())
                 .amphibiousLandAttackers(
                     amphibiousLandAttackers == null ? List.of() : amphibiousLandAttackers)
                 .battlesite(battlesite)
                 .costs(costs)
-                .territoryEffects(territoryEffects)
                 .data(data)
                 .build());
     // Remove two hit bb's selecting them first for default casualties
