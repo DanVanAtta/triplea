@@ -24,6 +24,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.UtilityClass;
 import org.triplea.java.collections.IntegerMap;
+import org.triplea.performance.PerfTimer;
 
 @UtilityClass
 class CasualtyOrderOfLosses {
@@ -74,13 +75,19 @@ class CasualtyOrderOfLosses {
    * provided. (Veqryn)
    */
   List<Unit> sortUnitsForCasualtiesWithSupport(final Parameters parameters) {
-    if (true) {
+    try (PerfTimer perf = PerfTimer.startTimer("OLD OOL Ordering")) {
+      oldsortUnitsForCasualtiesWithSupport(parameters);
+    }
+
+    try (PerfTimer perf = PerfTimer.startTimer("NEW OOL Ordering")) {
       return IterativeTotalPowerOolOrdering.builder()
           .parameters(parameters)
           .build()
           .sortUnitsForCasualtiesWithSupport();
     }
+  }
 
+  List<Unit> oldsortUnitsForCasualtiesWithSupport(final Parameters parameters) {
     // Convert unit lists to unit type lists
     final List<UnitType> targetTypes = new ArrayList<>();
     for (final Unit u : parameters.targetsToPickFrom) {
