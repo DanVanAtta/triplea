@@ -174,19 +174,24 @@ public class UnitType extends NamedAttachable {
     @Builder.Default private Collection<TerritoryEffect> territoryEffects = List.of();
     private final boolean amphibious;
     private final boolean defending;
-
   }
 
-  public int getStrength(
-      final GamePlayer owner, final CombatModifiers powerModifiers) {
+  public int getDiceRolls(final GamePlayer owner, final CombatModifiers powerModifiers) {
+    final UnitAttachment ua = UnitAttachment.get(this);
+    return powerModifiers.defending ? ua.getDefenseRolls(owner) : ua.getAttackRolls(owner);
+  }
+
+  public int getStrength(final GamePlayer owner, final CombatModifiers powerModifiers) {
     final boolean lhtrBombers = Properties.getLhtrHeavyBombers(getData());
     final UnitAttachment ua = UnitAttachment.get(this);
-    final int rolls = powerModifiers.defending ? ua.getDefenseRolls(owner) : ua.getAttackRolls(owner);
+    final int rolls =
+        powerModifiers.defending ? ua.getDefenseRolls(owner) : ua.getAttackRolls(owner);
     int strengthWithoutSupport = 0;
     // Find the strength the unit has without support
     // lhtr heavy bombers take best of n dice for both attack and defense
     if (rolls > 1 && (lhtrBombers || ua.getChooseBestRoll())) {
-      strengthWithoutSupport = powerModifiers.defending ? ua.getDefense(owner) : ua.getAttack(owner);
+      strengthWithoutSupport =
+          powerModifiers.defending ? ua.getDefense(owner) : ua.getAttack(owner);
       strengthWithoutSupport +=
           TerritoryEffectHelper.getTerritoryCombatBonus(
               this, powerModifiers.territoryEffects, powerModifiers.defending);
@@ -195,7 +200,8 @@ public class UnitType extends NamedAttachable {
           Math.min(Math.max(strengthWithoutSupport + 1, 0), getData().getDiceSides());
     } else {
       for (int i = 0; i < rolls; i++) {
-        final int tempStrength = powerModifiers.defending ? ua.getDefense(owner) : ua.getAttack(owner);
+        final int tempStrength =
+            powerModifiers.defending ? ua.getDefense(owner) : ua.getAttack(owner);
         strengthWithoutSupport +=
             TerritoryEffectHelper.getTerritoryCombatBonus(
                 this, powerModifiers.territoryEffects, powerModifiers.defending);

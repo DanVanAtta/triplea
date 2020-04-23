@@ -24,7 +24,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.UtilityClass;
 import org.triplea.java.collections.IntegerMap;
-import org.triplea.performance.PerfTimer;
 
 @UtilityClass
 public class CasualtyOrderOfLosses {

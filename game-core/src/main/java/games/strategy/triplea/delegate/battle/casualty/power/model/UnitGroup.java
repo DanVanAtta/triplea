@@ -10,7 +10,7 @@ public class UnitGroup {
   @Getter @Nonnull private final UnitTypeByPlayer unitTypeByPlayer;
   @Getter @Nonnull private final Integer strength;
   @Getter @Nonnull private final Integer diceRolls;
-  @Nonnull private Integer unitCount;
+  @Getter @Nonnull private Integer unitCount;
 
   void incrementCount() {
     unitCount++;

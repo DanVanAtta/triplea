@@ -2,6 +2,7 @@ package games.strategy.triplea.delegate.battle.casualty.power.model;
 
 import games.strategy.engine.data.GamePlayer;
 import games.strategy.engine.data.UnitType;
+import games.strategy.engine.data.UnitType.CombatModifiers;
 import lombok.Value;
 
 @Value
@@ -9,6 +10,14 @@ public class UnitTypeByPlayer {
   UnitType unitType;
   GamePlayer gamePlayer;
 
+
+  int getStrength(final CombatModifiers combatModifiers) {
+    return unitType.getStrength(gamePlayer, combatModifiers);
+  }
+
+  int getDiceRolls(final CombatModifiers combatModifiers) {
+    return unitType.getDiceRolls(gamePlayer, combatModifiers);
+  }
 
   @Override
   public boolean equals(final Object rhs) {

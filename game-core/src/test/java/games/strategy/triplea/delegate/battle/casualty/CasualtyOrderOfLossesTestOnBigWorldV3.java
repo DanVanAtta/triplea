@@ -44,7 +44,7 @@ class CasualtyOrderOfLossesTestOnBigWorldV3 {
     assertThat(result.get(2).getType(), is(testData.marine));
     assertThat(
         result.get(3).getType(),
-        is(testData.artillery)); // << bug we should pick the artillery first
+        is(testData.artillery));
   }
 
   private CasualtyOrderOfLosses.Parameters amphibAssault(final Collection<Unit> amphibUnits) {
