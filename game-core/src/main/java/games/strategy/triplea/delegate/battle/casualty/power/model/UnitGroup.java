@@ -1,13 +1,28 @@
 package games.strategy.triplea.delegate.battle.casualty.power.model;
 
-import games.strategy.engine.data.UnitType;
 import javax.annotation.Nonnull;
 import lombok.Builder;
+import lombok.Getter;
+import org.triplea.java.Postconditions;
 
-@Builder
+@Builder(toBuilder = true)
 public class UnitGroup {
-  @Nonnull private final UnitType unitType;
-  @Nonnull private final Integer strength;
-  @Nonnull private final Integer diceRolls;
+  @Getter @Nonnull private final UnitTypeByPlayer unitTypeByPlayer;
+  @Getter @Nonnull private final Integer strength;
+  @Getter @Nonnull private final Integer diceRolls;
   @Nonnull private Integer unitCount;
+
+  void incrementCount() {
+    unitCount++;
+    Postconditions.assertState(unitCount > 0);
+  }
+
+  void decrementCount() {
+    unitCount--;
+    Postconditions.assertState(unitCount >= 0);
+  }
+
+  boolean isEmpty() {
+    return unitCount == 0;
+  }
 }

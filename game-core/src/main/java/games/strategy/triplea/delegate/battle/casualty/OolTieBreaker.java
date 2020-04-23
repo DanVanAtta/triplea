@@ -1,13 +1,11 @@
 package games.strategy.triplea.delegate.battle.casualty;
 
-import games.strategy.engine.data.GamePlayer;
-import games.strategy.engine.data.UnitType;
 import games.strategy.triplea.attachments.UnitAttachment;
+import games.strategy.triplea.delegate.battle.casualty.power.model.UnitTypeByPlayer;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import lombok.Builder;
 
 /**
@@ -15,21 +13,20 @@ import lombok.Builder;
  * decide which one is the best to choose for a casualty.
  */
 @Builder
-public class OolTieBreaker implements Function<Collection<UnitType>, UnitType> {
-
-  @Nonnull private final GamePlayer gamePlayer;
+public class OolTieBreaker implements Function<Collection<UnitTypeByPlayer>, UnitTypeByPlayer> {
 
   @Override
-  public UnitType apply(final Collection<UnitType> unitTypes) {
+  public UnitTypeByPlayer apply(final Collection<UnitTypeByPlayer> unitTypes) {
     return unitTypes.stream()
-        .sorted(Comparator.comparingInt(this::totalAttackAndDefensivePower))
+        .sorted(Comparator.comparingInt(OolTieBreaker::totalAttackAndDefensivePower))
         .collect(Collectors.toList())
         .iterator()
         .next();
   }
 
-  private int totalAttackAndDefensivePower(final UnitType unitType) {
-    final var unitAttachment = UnitAttachment.get(unitType);
-    return unitAttachment.getAttack(gamePlayer) + unitAttachment.getDefense(gamePlayer);
+  private static int totalAttackAndDefensivePower(final UnitTypeByPlayer unitTypeByPlayer) {
+    final var unitAttachment = UnitAttachment.get(unitTypeByPlayer.getUnitType());
+    return unitAttachment.getAttack(unitTypeByPlayer.getGamePlayer())
+        + unitAttachment.getDefense(unitTypeByPlayer.getGamePlayer());
   }
 }

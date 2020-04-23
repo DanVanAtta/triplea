@@ -14,10 +14,7 @@ import games.strategy.engine.data.UnitType;
 import games.strategy.engine.data.changefactory.ChangeFactory;
 import games.strategy.triplea.attachments.TechAttachment;
 import games.strategy.triplea.delegate.HeavyBomberAdvance;
-<<<<<<< HEAD
-=======
 import games.strategy.triplea.delegate.ImprovedArtillerySupportAdvance;
->>>>>>> Improve tests further, big world v3 shows a few bad casualty selections
 import games.strategy.triplea.delegate.TechAdvance;
 import games.strategy.triplea.xml.TestMapGameData;
 import java.util.ArrayList;

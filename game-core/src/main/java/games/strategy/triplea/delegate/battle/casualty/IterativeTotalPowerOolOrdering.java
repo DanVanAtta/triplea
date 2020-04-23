@@ -2,8 +2,8 @@ package games.strategy.triplea.delegate.battle.casualty;
 
 import com.google.common.base.Preconditions;
 import games.strategy.engine.data.Unit;
-import games.strategy.engine.data.UnitType;
 import games.strategy.triplea.delegate.battle.casualty.power.model.UnitGroupSet;
+import games.strategy.triplea.delegate.battle.casualty.power.model.UnitTypeByPlayer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,32 +22,41 @@ class IterativeTotalPowerOolOrdering {
     final UnitGroupSet masterUnitGroupSet = new UnitGroupSet(parameters);
 
     while (!masterUnitGroupSet.isEmpty()) {
-      final Collection<UnitType> unitType = masterUnitGroupSet.getWeakestUnit();
-      final UnitType typeToPick = breakTie(unitType);
-      masterUnitGroupSet.removeUnit(typeToPick);
-      final Unit unitToRemove = findUnitOfType(typeToPick, remainingUnits);
+      final Collection<UnitTypeByPlayer> weakestUnitsByPlayer = masterUnitGroupSet.getWeakestUnit();
+      final UnitTypeByPlayer unitToPick = breakTie(weakestUnitsByPlayer);
+      masterUnitGroupSet.removeUnit(unitToPick);
+      final Unit unitToRemove = findUnitOfType(unitToPick, remainingUnits);
       casualtyOrder.add(unitToRemove);
       remainingUnits.remove(unitToRemove);
     }
     return casualtyOrder;
   }
 
-  private static Unit findUnitOfType(final UnitType unitType, final Collection<Unit> units) {
+  private static Unit findUnitOfType(final UnitTypeByPlayer unitTypeByPlayer, final Collection<Unit> units) {
     return units.stream()
-        .filter(unit -> unit.getType().equals(unitType))
+        .filter(unit -> unit.getOwner().equals(unitTypeByPlayer.getGamePlayer()))
+        .filter(unit -> unit.getType().equals(unitTypeByPlayer.getUnitType()))
         .findAny()
         .orElseThrow(
             () ->
                 new RuntimeException(
-                    "Error, expected to find unit type: " + unitType + " in units: " + units));
+                    "Error, expected to find unit type: " + unitTypeByPlayer + " in units: " + units));
   }
 
-  private UnitType breakTie(final Collection<UnitType> unitTypes) {
-    Preconditions.checkArgument(!unitTypes.isEmpty());
+  private UnitTypeByPlayer breakTie(final Collection<UnitTypeByPlayer> unitTypeByPlayer) {
+    Preconditions.checkArgument(!unitTypeByPlayer.isEmpty());
 
-    return OolTieBreaker.builder() //
-        .gamePlayer(parameters.getPlayer())
-        .build()
-        .apply(unitTypes);
+    int leastCost = Integer.MAX_VALUE;
+    UnitTypeByPlayer bestUnitToChoose = null;
+
+    for(final UnitTypeByPlayer typeByPlayer : unitTypeByPlayer) {
+      final int costToConsider = parameters.getCosts().getInt(typeByPlayer.getUnitType());
+       if(bestUnitToChoose == null || costToConsider < leastCost) {
+         bestUnitToChoose = typeByPlayer;
+         leastCost = parameters.getCosts().getInt(typeByPlayer.getUnitType());
+      }
+    }
+
+    return bestUnitToChoose;
   }
 }

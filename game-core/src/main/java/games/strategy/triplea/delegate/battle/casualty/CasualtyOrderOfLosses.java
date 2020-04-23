@@ -27,8 +27,7 @@ import org.triplea.java.collections.IntegerMap;
 import org.triplea.performance.PerfTimer;
 
 @UtilityClass
-public
-class CasualtyOrderOfLosses {
+public class CasualtyOrderOfLosses {
   private final Map<String, List<UnitType>> oolCache = new ConcurrentHashMap<>();
 
   void clearOolCache() {
@@ -76,16 +75,29 @@ class CasualtyOrderOfLosses {
    * provided. (Veqryn)
    */
   List<Unit> sortUnitsForCasualtiesWithSupport(final Parameters parameters) {
-    try (PerfTimer perf = PerfTimer.startTimer("OLD OOL Ordering")) {
-      return oldsortUnitsForCasualtiesWithSupport(parameters);
+    final long oldNanos;
+    try (PerfTimer perf = PerfTimer.startNonReportingTimer("OLD OOL Ordering")) {
+      oldsortUnitsForCasualtiesWithSupport(parameters);
+      oldNanos = perf.getElapsedNanos();
+      System.out.println("old nanos: " + oldNanos);
     }
 
-//    try (PerfTimer perf = PerfTimer.startTimer("NEW OOL Ordering")) {
-//      return IterativeTotalPowerOolOrdering.builder()
-//          .parameters(parameters)
-//          .build()
-//          .sortUnitsForCasualtiesWithSupport();
-//    }
+    final long newNanos;
+    try (PerfTimer perf = PerfTimer.startNonReportingTimer("NEW OOL Ordering")) {
+
+      final List<Unit> result =
+          IterativeTotalPowerOolOrdering.builder()
+              .parameters(parameters)
+              .build()
+              .sortUnitsForCasualtiesWithSupport();
+
+    }
+    newNanos = perf.getElapsedNanos();
+    System.out.println("new nanos: " + newNanos);
+
+    PerfTimer.reportResult(newNanos - oldNanos, "New OOL Ordering Compared to Old");
+    return result;
+
   }
 
   List<Unit> oldsortUnitsForCasualtiesWithSupport(final Parameters parameters) {
