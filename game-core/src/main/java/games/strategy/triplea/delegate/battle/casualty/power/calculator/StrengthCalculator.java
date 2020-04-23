@@ -5,7 +5,6 @@ import games.strategy.engine.data.GamePlayer;
 import games.strategy.engine.data.UnitType;
 import games.strategy.engine.data.UnitType.CombatModifiers;
 import games.strategy.triplea.attachments.UnitAttachment;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;

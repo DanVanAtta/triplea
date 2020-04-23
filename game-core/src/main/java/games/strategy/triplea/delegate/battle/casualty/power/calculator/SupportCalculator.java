@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Singular;
 import lombok.ToString;
 import lombok.Value;
+import org.triplea.performance.PerfTimer;
 
 @Builder
 public class SupportCalculator {
@@ -74,8 +75,13 @@ public class SupportCalculator {
             .supportAttachments(supportAttachments)
             .build();
 
-    final Map<UnitType, List<UnitBuffs>> unitBuffs = computeInitialBuffs(units);
-    final Map<UnitType, List<UnitBuffs>> strengthBuffs =
+    final Map<UnitType, List<UnitBuffs>> unitBuffs;
+    try(PerfTimer timer = PerfTimer.startTimer("computInitialBuffs")) {
+        unitBuffs = computeInitialBuffs(units);
+    }
+    try(PerfTimer timer = PerfTimer.startTimer("everything else")) {
+
+      final Map<UnitType, List<UnitBuffs>> strengthBuffs =
         computeBuffs(
             alliedUnitCounts,
             unitBuffs,
@@ -116,6 +122,7 @@ public class SupportCalculator {
               return power * rolls;
             })
         .sum();
+    }
 
     // TODO: document that we are assuming that added rolls will be applied once
     // TODO: document that we are assuming that added support will also apply
@@ -129,7 +136,7 @@ public class SupportCalculator {
   private Map<UnitType, List<UnitBuffs>> computeInitialBuffs(final Collection<UnitData> units) {
     final Map<UnitType, List<UnitBuffs>> buffs = new HashMap<>();
     for (final UnitData unitData : units) {
-      buffs.put(unitData.type, new ArrayList<>());
+      buffs.put(unitData.type, new ArrayList<>(units.size()));
       for (int i = 0; i < unitData.count; i++) {
         buffs
             .get(unitData.type)
@@ -156,7 +163,7 @@ public class SupportCalculator {
       final Collection<UnitSupportAttachment> attachments,
       final BuffType buffType) {
 
-    final List<UnitSupportAttachment> supportAttachments = new ArrayList<>();
+    final List<UnitSupportAttachment> supportAttachments = new ArrayList<>(attachments.size());
     for (final UnitSupportAttachment unitSupportAttachment : attachments) {
       UnitType supportingUnitType = (UnitType) unitSupportAttachment.getAttachedTo();
       int unitCount =
@@ -177,7 +184,7 @@ public class SupportCalculator {
     supportAttachments.sort(buffType == BuffType.ALLIED ? comparator.reversed() : comparator);
 
     // the list of units that have received a buff
-    final Map<UnitType, List<UnitBuffs>> buffedUnits = new HashMap<>();
+    final Map<UnitType, List<UnitBuffs>> buffedUnits = new HashMap<>(existingUnitBuffs.size());
     for (final Map.Entry<UnitType, List<UnitBuffs>> entry : existingUnitBuffs.entrySet()) {
       buffedUnits.put(entry.getKey(), new ArrayList<>(entry.getValue()));
     }

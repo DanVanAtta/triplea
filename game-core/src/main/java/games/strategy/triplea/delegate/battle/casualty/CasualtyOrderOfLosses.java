@@ -27,6 +27,7 @@ import org.triplea.java.collections.IntegerMap;
 import org.triplea.performance.PerfTimer;
 
 @UtilityClass
+public
 class CasualtyOrderOfLosses {
   private final Map<String, List<UnitType>> oolCache = new ConcurrentHashMap<>();
 
@@ -36,7 +37,7 @@ class CasualtyOrderOfLosses {
 
   @Builder
   @Value
-  static class Parameters {
+  public static class Parameters {
     @Nonnull Collection<Unit> targetsToPickFrom;
     @Nonnull GamePlayer player;
     @Nonnull Collection<Unit> enemyUnits;
@@ -76,15 +77,15 @@ class CasualtyOrderOfLosses {
    */
   List<Unit> sortUnitsForCasualtiesWithSupport(final Parameters parameters) {
     try (PerfTimer perf = PerfTimer.startTimer("OLD OOL Ordering")) {
-      oldsortUnitsForCasualtiesWithSupport(parameters);
+      return oldsortUnitsForCasualtiesWithSupport(parameters);
     }
 
-    try (PerfTimer perf = PerfTimer.startTimer("NEW OOL Ordering")) {
-      return IterativeTotalPowerOolOrdering.builder()
-          .parameters(parameters)
-          .build()
-          .sortUnitsForCasualtiesWithSupport();
-    }
+//    try (PerfTimer perf = PerfTimer.startTimer("NEW OOL Ordering")) {
+//      return IterativeTotalPowerOolOrdering.builder()
+//          .parameters(parameters)
+//          .build()
+//          .sortUnitsForCasualtiesWithSupport();
+//    }
   }
 
   List<Unit> oldsortUnitsForCasualtiesWithSupport(final Parameters parameters) {
