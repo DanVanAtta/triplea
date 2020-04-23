@@ -75,29 +75,14 @@ public class CasualtyOrderOfLosses {
    * provided. (Veqryn)
    */
   List<Unit> sortUnitsForCasualtiesWithSupport(final Parameters parameters) {
-    final long oldNanos;
-    try (PerfTimer perf = PerfTimer.startNonReportingTimer("OLD OOL Ordering")) {
-      oldsortUnitsForCasualtiesWithSupport(parameters);
-      oldNanos = perf.getElapsedNanos();
-      System.out.println("old nanos: " + oldNanos);
-    }
+//    return oldsortUnitsForCasualtiesWithSupport(parameters);
 
-    final long newNanos;
-    try (PerfTimer perf = PerfTimer.startNonReportingTimer("NEW OOL Ordering")) {
 
-      final List<Unit> result =
-          IterativeTotalPowerOolOrdering.builder()
-              .parameters(parameters)
-              .build()
-              .sortUnitsForCasualtiesWithSupport();
-
-    }
-    newNanos = perf.getElapsedNanos();
-    System.out.println("new nanos: " + newNanos);
-
-    PerfTimer.reportResult(newNanos - oldNanos, "New OOL Ordering Compared to Old");
-    return result;
-
+    return
+        IterativeTotalPowerOolOrdering.builder()
+            .parameters(parameters)
+            .build()
+            .sortUnitsForCasualtiesWithSupport();
   }
 
   List<Unit> oldsortUnitsForCasualtiesWithSupport(final Parameters parameters) {

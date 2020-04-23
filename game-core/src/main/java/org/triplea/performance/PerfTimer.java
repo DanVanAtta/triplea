@@ -31,7 +31,7 @@ public class PerfTimer implements Closeable {
 
   @Override
   public void close() {
-    processResult(stopTimer(), this);
+    processResult(stopTimer(), title);
   }
 
   @SuppressWarnings("unused")
@@ -39,11 +39,11 @@ public class PerfTimer implements Closeable {
     return new PerfTimer(title);
   }
 
-  private static void processResult(final long stopNanos, final PerfTimer perfTimer) {
-    final long stopMicros = stopNanos / 1000;
+  public static void processResult(final long elapseNanos, final String title) {
+    final long stopMicros = elapseNanos / 1000;
 
     final long milliFraction = (stopMicros % 1000) / 100;
     final long millis = (stopMicros / 1000);
-    log.info(millis + "." + milliFraction + " ms - " + perfTimer.title + ", " + stopNanos + " ns");
+    log.info(millis + "." + milliFraction + " ms - " + title + ", " + elapseNanos + " ns");
   }
 }
