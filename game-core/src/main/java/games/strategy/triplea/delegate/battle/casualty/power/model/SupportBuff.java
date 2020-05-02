@@ -25,8 +25,7 @@ public class SupportBuff {
    * The number of supports of this type available. EG: if we have a count of 2, and 3 units, then 2
    * of those 3 units are supported.
    */
-  @Getter
-  private Integer count;
+  @Getter private Integer count;
 
   void decrement() {
     count--;

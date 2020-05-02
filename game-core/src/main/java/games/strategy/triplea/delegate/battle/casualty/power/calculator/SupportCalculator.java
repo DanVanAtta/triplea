@@ -6,14 +6,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +30,6 @@ public class SupportCalculator {
 
   @Nonnull private final Collection<UnitSupportAttachment> supportAttachments;
 
-
   @Value
   @Builder
   public static class UnitData {
@@ -51,7 +47,6 @@ public class SupportCalculator {
     @Nonnull private Integer power;
     @Nonnull private Integer rolls;
   }
-
 
   Map<UnitType, Integer> groupUnitCountsByType(final Collection<UnitData> units) {
     final Map<UnitType, Integer> unitCounts = new HashMap<>();
@@ -76,52 +71,52 @@ public class SupportCalculator {
             .build();
 
     final Map<UnitType, List<UnitBuffs>> unitBuffs;
-    try(PerfTimer timer = PerfTimer.startTimer("computInitialBuffs")) {
-        unitBuffs = computeInitialBuffs(units);
+    try (PerfTimer timer = PerfTimer.startTimer("computInitialBuffs")) {
+      unitBuffs = computeInitialBuffs(units);
     }
-    try(PerfTimer timer = PerfTimer.startTimer("everything else")) {
+    try (PerfTimer timer = PerfTimer.startTimer("everything else")) {
 
       final Map<UnitType, List<UnitBuffs>> strengthBuffs =
-        computeBuffs(
-            alliedUnitCounts,
-            unitBuffs,
-            (buff, bonus) -> buff.power += bonus,
-            applicableSupportRules.getStrengthSupportRules(),
-            BuffType.ALLIED);
+          computeBuffs(
+              alliedUnitCounts,
+              unitBuffs,
+              (buff, bonus) -> buff.power += bonus,
+              applicableSupportRules.getStrengthSupportRules(),
+              BuffType.ALLIED);
 
-    final Map<UnitType, List<UnitBuffs>> enemyModifiedStrengthBuffs =
-        computeBuffs(
-            enemyUnitCounts,
-            strengthBuffs,
-            (buff, bonus) -> buff.power += bonus,
-            applicableSupportRules.getEnemyStrengthSupportRules(),
-            BuffType.ENEMY);
+      final Map<UnitType, List<UnitBuffs>> enemyModifiedStrengthBuffs =
+          computeBuffs(
+              enemyUnitCounts,
+              strengthBuffs,
+              (buff, bonus) -> buff.power += bonus,
+              applicableSupportRules.getEnemyStrengthSupportRules(),
+              BuffType.ENEMY);
 
-    final Map<UnitType, List<UnitBuffs>> rollBuffs =
-        computeBuffs(
-            alliedUnitCounts,
-            enemyModifiedStrengthBuffs,
-            (buff, bonus) -> buff.rolls += bonus,
-            applicableSupportRules.getDiceRollSupportRules(),
-            BuffType.ALLIED);
+      final Map<UnitType, List<UnitBuffs>> rollBuffs =
+          computeBuffs(
+              alliedUnitCounts,
+              enemyModifiedStrengthBuffs,
+              (buff, bonus) -> buff.rolls += bonus,
+              applicableSupportRules.getDiceRollSupportRules(),
+              BuffType.ALLIED);
 
-    final Map<UnitType, List<UnitBuffs>> enemyModifiedRollBuffs =
-        computeBuffs(
-            enemyUnitCounts,
-            rollBuffs,
-            (buff, bonus) -> buff.rolls += bonus,
-            applicableSupportRules.getEnemyDiceRollSupportRules(),
-            BuffType.ENEMY);
+      final Map<UnitType, List<UnitBuffs>> enemyModifiedRollBuffs =
+          computeBuffs(
+              enemyUnitCounts,
+              rollBuffs,
+              (buff, bonus) -> buff.rolls += bonus,
+              applicableSupportRules.getEnemyDiceRollSupportRules(),
+              BuffType.ENEMY);
 
-    return enemyModifiedRollBuffs.values().stream()
-        .flatMap(Collection::stream)
-        .mapToInt(
-            buff -> {
-              final int power = Math.max(0, buff.power);
-              final int rolls = Math.max(0, buff.rolls);
-              return power * rolls;
-            })
-        .sum();
+      return enemyModifiedRollBuffs.values().stream()
+          .flatMap(Collection::stream)
+          .mapToInt(
+              buff -> {
+                final int power = Math.max(0, buff.power);
+                final int rolls = Math.max(0, buff.rolls);
+                return power * rolls;
+              })
+          .sum();
     }
 
     // TODO: document that we are assuming that added rolls will be applied once

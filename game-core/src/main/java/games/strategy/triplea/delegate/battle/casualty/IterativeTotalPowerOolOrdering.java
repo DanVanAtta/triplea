@@ -32,7 +32,8 @@ class IterativeTotalPowerOolOrdering {
     return casualtyOrder;
   }
 
-  private static Unit findUnitOfType(final UnitTypeByPlayer unitTypeByPlayer, final Collection<Unit> units) {
+  private static Unit findUnitOfType(
+      final UnitTypeByPlayer unitTypeByPlayer, final Collection<Unit> units) {
     return units.stream()
         .filter(unit -> unit.getOwner().equals(unitTypeByPlayer.getGamePlayer()))
         .filter(unit -> unit.getType().equals(unitTypeByPlayer.getUnitType()))
@@ -40,7 +41,10 @@ class IterativeTotalPowerOolOrdering {
         .orElseThrow(
             () ->
                 new RuntimeException(
-                    "Error, expected to find unit type: " + unitTypeByPlayer + " in units: " + units));
+                    "Error, expected to find unit type: "
+                        + unitTypeByPlayer
+                        + " in units: "
+                        + units));
   }
 
   private UnitTypeByPlayer breakTie(final Collection<UnitTypeByPlayer> unitTypeByPlayer) {
@@ -49,11 +53,11 @@ class IterativeTotalPowerOolOrdering {
     int leastCost = Integer.MAX_VALUE;
     UnitTypeByPlayer bestUnitToChoose = null;
 
-    for(final UnitTypeByPlayer typeByPlayer : unitTypeByPlayer) {
+    for (final UnitTypeByPlayer typeByPlayer : unitTypeByPlayer) {
       final int costToConsider = parameters.getCosts().getInt(typeByPlayer.getUnitType());
-       if(bestUnitToChoose == null || costToConsider < leastCost) {
-         bestUnitToChoose = typeByPlayer;
-         leastCost = parameters.getCosts().getInt(typeByPlayer.getUnitType());
+      if (bestUnitToChoose == null || costToConsider < leastCost) {
+        bestUnitToChoose = typeByPlayer;
+        leastCost = parameters.getCosts().getInt(typeByPlayer.getUnitType());
       }
     }
 

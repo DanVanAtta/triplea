@@ -124,7 +124,7 @@ public class UnitGroupSet {
     final int enemyRollbuff;
 
     return (unitGroup.getStrength() + bestStrengthBuff - enemyStrengthBuff)
-        * (unitGroup.getDiceRolls() + bestRollsBuff - enemyRollbuff)
+            * (unitGroup.getDiceRolls() + bestRollsBuff - enemyRollbuff)
         + (strengthSupportBeingProvided * rollSupportBeingProvided);
   }
 

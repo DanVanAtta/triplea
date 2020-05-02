@@ -202,8 +202,7 @@ public class UnitBattleComparator implements Comparator<Unit> {
       final boolean defending,
       final Collection<TerritoryEffect> territoryEffects) {
 
-    return unit
-        .getType()
+    return unit.getType()
         .getStrength(
             unit.getOwner(),
             CombatModifiers.builder()

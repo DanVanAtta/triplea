@@ -26,9 +26,10 @@ class SupportCalculatorTest {
   @MethodSource
   void verifySupport(final TestParameters testParameters) {
 
-    final Collection<UnitSupportAttachment> supportAttachments = testParameters.supportAttachments.stream()
-        .map(SupportCalculatorTest::buildSupportAttachment)
-        .collect(Collectors.toList());
+    final Collection<UnitSupportAttachment> supportAttachments =
+        testParameters.supportAttachments.stream()
+            .map(SupportCalculatorTest::buildSupportAttachment)
+            .collect(Collectors.toList());
 
     final var supportCalculator =
         SupportCalculator.builder()
@@ -72,7 +73,6 @@ class SupportCalculatorTest {
         supportRuleForUnitNotPresent());
   }
 
-
   @Builder
   @ToString
   private static class TestParameters {
@@ -109,7 +109,8 @@ class SupportCalculatorTest {
             UnitSupportAttachment.ATTACHMENT_NAME, parameters.supportingUnit, testData.gameData);
     unitSupportAttachment.setStrength(parameters.strength != 0);
     unitSupportAttachment.setRoll(parameters.rolls != 0);
-    unitSupportAttachment.setBonus(parameters.strength != 0 ? parameters.strength : parameters.rolls);
+    unitSupportAttachment.setBonus(
+        parameters.strength != 0 ? parameters.strength : parameters.rolls);
     unitSupportAttachment.setBonusType(
         new UnitSupportAttachment.BonusType("name", parameters.supportCount));
     unitSupportAttachment.setOffence(parameters.offense);
@@ -526,7 +527,7 @@ class SupportCalculatorTest {
     // enemy power buff subtracts one from each: -3
     // friendly artillery gives two more rolls @ 1: +2
     // enemy reduces roll count of all units (leaving only two infantry rolling at a 1)
-    final int expectedSupportBonus = -3 + 2 -3;
+    final int expectedSupportBonus = -3 + 2 - 3;
 
     return TestParameters.builder()
         .testCaseLabel("enemyUnitProvidingLessAttackStrengthAndLessRolls")
@@ -646,7 +647,6 @@ class SupportCalculatorTest {
         .build();
   }
 
-
   private static TestParameters supportRuleForUnitNotPresent() {
     final int basePower = 1;
     final int expectedSupportBonus = 0; // no artillery to provide support
@@ -663,5 +663,4 @@ class SupportCalculatorTest {
         .expectedPowerWithSupport(basePower + expectedSupportBonus)
         .build();
   }
-
 }

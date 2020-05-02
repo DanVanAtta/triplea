@@ -47,24 +47,28 @@ public class StrengthCalculator {
 
   private Collection<SupportCalculator.UnitData> computeEnemyData() {
     return enemyUnits.entrySet().stream()
-        .flatMap(typeToPlayerUnitCounts ->
-          typeToPlayerUnitCounts.getValue().entrySet().stream().map(playerToCountEntry -> {
+        .flatMap(
+            typeToPlayerUnitCounts ->
+                typeToPlayerUnitCounts.getValue().entrySet().stream()
+                    .map(
+                        playerToCountEntry -> {
+                          final var unitType = typeToPlayerUnitCounts.getKey();
+                          final var unitCount = playerToCountEntry.getValue();
+                          final var player = playerToCountEntry.getKey();
+                          final var rolls =
+                              combatModifiers.isDefending()
+                                  ? UnitAttachment.get(unitType).getDefenseRolls(player)
+                                  : UnitAttachment.get(unitType).getAttackRolls(player);
 
-            final var unitType = typeToPlayerUnitCounts.getKey();
-            final var unitCount = playerToCountEntry.getValue();
-            final var player = playerToCountEntry.getKey();
-            final var rolls = combatModifiers.isDefending()
-                ? UnitAttachment.get(unitType).getDefenseRolls(player)
-                : UnitAttachment.get(unitType).getAttackRolls(player);
-
-            return SupportCalculator.UnitData.builder()
-                .type(unitType)
-                .count(unitCount)
-                .power(unitType.getStrength(player , combatModifiers))
-                .rolls(rolls)
-                .build();
-              }
-          ).collect(Collectors.toList()).stream()
-        ).collect(Collectors.toList());
+                          return SupportCalculator.UnitData.builder()
+                              .type(unitType)
+                              .count(unitCount)
+                              .power(unitType.getStrength(player, combatModifiers))
+                              .rolls(rolls)
+                              .build();
+                        })
+                    .collect(Collectors.toList())
+                    .stream())
+        .collect(Collectors.toList());
   }
 }

@@ -21,7 +21,6 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import lombok.Data;
 import lombok.Setter;
-import lombok.Value;
 
 /**
  * An attachment for instances of {@link UnitType} that defines properties for unit types that

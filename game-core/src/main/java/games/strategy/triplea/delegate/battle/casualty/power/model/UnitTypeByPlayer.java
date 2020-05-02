@@ -10,7 +10,6 @@ public class UnitTypeByPlayer {
   UnitType unitType;
   GamePlayer gamePlayer;
 
-
   int getStrength(final CombatModifiers combatModifiers) {
     return unitType.getStrength(gamePlayer, combatModifiers);
   }
@@ -21,7 +20,7 @@ public class UnitTypeByPlayer {
 
   @Override
   public boolean equals(final Object rhs) {
-    if(!(rhs instanceof UnitTypeByPlayer)) {
+    if (!(rhs instanceof UnitTypeByPlayer)) {
       return false;
     }
 

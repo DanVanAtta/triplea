@@ -74,14 +74,12 @@ public class CasualtyOrderOfLosses {
    * provided. (Veqryn)
    */
   List<Unit> sortUnitsForCasualtiesWithSupport(final Parameters parameters) {
-//    return oldsortUnitsForCasualtiesWithSupport(parameters);
+    //    return oldsortUnitsForCasualtiesWithSupport(parameters);
 
-
-    return
-        IterativeTotalPowerOolOrdering.builder()
-            .parameters(parameters)
-            .build()
-            .sortUnitsForCasualtiesWithSupport();
+    return IterativeTotalPowerOolOrdering.builder()
+        .parameters(parameters)
+        .build()
+        .sortUnitsForCasualtiesWithSupport();
   }
 
   List<Unit> oldsortUnitsForCasualtiesWithSupport(final Parameters parameters) {
