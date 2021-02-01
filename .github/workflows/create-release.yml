@@ -23,8 +23,9 @@ jobs:
               echo "is_release=false" >> $GITHUB_ENV
               echo "release_name=Prerelease" >> $GITHUB_ENV
           else
-              echo "build_number=$(.build/set-build-number ${{ github.run_number }})" >> $GITHUB_ENV
-              echo "build_tag=$build_number" >> $GITHUB_ENV
+              BUILD_NUMBER=$(.build/set-build-number ${{ github.run_number }})
+              echo "build_number=$BUILD_NUMBER" >> $GITHUB_ENV
+              echo "build_tag=$BUILD_NUMBER" >> $GITHUB_ENV
               echo "is_release=true" >> $GITHUB_ENV
               echo "release_name=Release $build_number" >> $GITHUB_ENV
           fi
