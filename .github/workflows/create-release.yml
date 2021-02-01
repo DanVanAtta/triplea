@@ -24,7 +24,7 @@ jobs:
               echo "release_name=Prerelease" >> $GITHUB_ENV
           else
               echo "build_number=$(.build/set-build-number ${{ github.run_number }})" >> $GITHUB_ENV
-              echo "build_tag=2.6.release" >> $GITHUB_ENV
+              echo "build_tag=$build_number" >> $GITHUB_ENV
               echo "is_release=true" >> $GITHUB_ENV
               echo "release_name=Release $build_number" >> $GITHUB_ENV
           fi
@@ -33,7 +33,7 @@ jobs:
             echo "build_number = ${{ env.build_number }}" 
             echo "build_tag = ${{ env.build_tag }}" 
             echo "is_release = ${{ env.is_release }}" 
-            echo "release_name = ${{ env.build_tag }}" 
+            echo "release_name = ${{ env.release_name }}" 
       - name: Build installers
         run: .build/build-installer
         env:
