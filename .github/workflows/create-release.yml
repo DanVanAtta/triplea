@@ -16,6 +16,7 @@ jobs:
       - name: set tag
         id: setTag
         run: |
+          echo "base ref = ${{ github.base.ref }}"
           if [[ "${{ github.base.ref }}" == master ]]; then
               echo "build_number=$(.build/set-build-number ${{ github.run_number }}.pre)" >> $GITHUB_ENV
               echo "build_tag=prerelease" >> $GITHUB_ENV
