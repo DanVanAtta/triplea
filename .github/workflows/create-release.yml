@@ -1,0 +1,49 @@
+name: Build and upload Pre-Release
+on:
+  push:
+    branches:
+      - master
+      - release/*
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+jobs:
+  build:
+    name: Create Pre-Release
+    runs-on: Ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: set tag
+        id: setTag
+        run: |
+          if [[ "${{ github.base.ref }}" == master ]]; then
+              echo "build_tag=2.6.release" >> $GITHUB_ENV
+          else
+              echo "build_tag=2.6.prerelease" >> $GITHUB_ENV
+          fi
+      - name: echo version
+        run: echo "${{ env.build_tag }}" 
+      - name: Build installers
+        run: .build/build-installer
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+          INSTALL4J_LICENSE: ${{ secrets.INSTALL4J_LICENSE }}
+      - uses: dev-drprasad/delete-tag-and-release@v0.1.2
+        with:
+          delete_release: true
+          tag_name: prerelease
+      - name: Create Github Pre-Release
+        uses: actions/create-release@v1
+        with:        
+          tag_name: prerelease
+          release_name: Latest Pre-Release (Build ${{ github.run_number }})
+          prerelease: true 
+          draft: false
+      - name: Upload Release Asset
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: prerelease
+          file: build/artifacts/*
+          file_glob: true
+
