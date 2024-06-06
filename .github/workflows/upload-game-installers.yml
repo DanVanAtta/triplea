@@ -26,6 +26,10 @@ jobs:
         with:
           distribution: temurin
           java-version: 11
+      - name: Publish package
+        run: ./gradlew :game-app:game-headed:publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Installers
         run: ./game-app/run/package
         env:

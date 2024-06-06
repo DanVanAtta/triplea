@@ -4,6 +4,8 @@ plugins {
     id "io.franzbecker.gradle-lombok" version "5.0.0" apply false
     id "com.diffplug.spotless" version "6.25.0" apply false
     id "com.avast.gradle.docker-compose" version "0.17.7"
+    id "maven-publish"
+
 }
 
 apply plugin: "eclipse"
@@ -34,6 +36,7 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: "maven-publish"
     apply plugin: "checkstyle"
     apply plugin: "jacoco"
     apply plugin: "java"
