@@ -23,8 +23,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 11
+      - name: set build version variables
+        run: |
+          BUILD_VERSION=$(game-app/run/.build/get-build-version)
+          echo "JAR_VERSION=$BUILD_VERSION" | tee -a $GITHUB_ENV
       - name: Publish package
         run: ./gradlew :game-app:game-headed:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

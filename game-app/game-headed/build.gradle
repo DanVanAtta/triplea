@@ -8,6 +8,12 @@ plugins {
 archivesBaseName = "$group-$name"
 mainClassName = "org.triplea.game.client.HeadedGameRunner"
 
+// version value is 'x.y.z'
+// 'x.y' is taken from the version published with the game installer
+// 'z' should start at zero, increment it whenever there is an update
+// that needs to be visible to lobby code
+version = System.getenv("JAR_VERSION")
+
 ext {
     releasesDir = file("$buildDir/releases")
     releaseVersion = getProductVersion() + "+" + getCommitNumber()
