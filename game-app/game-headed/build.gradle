@@ -55,9 +55,8 @@ publishing {
         }
     }
     publications {
-        shadow(MavenPublication) {
-            from components.java
-            artifact shadowJar
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
         }
     }
 }
