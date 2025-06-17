@@ -3,13 +3,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - '.github/workflows/upload-game-installers.yml'
-      - 'build.gradle'
-      - 'game-app/**'
-      - 'http-clients/**'
-      - 'lib/**'
-      - 'servers/*/client/**'
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
